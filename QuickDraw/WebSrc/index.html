@@ -1,0 +1,43 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>QuickDraw</title>
+  <meta name="description" content="Gesture Drawing Practice App">
+  <meta name="author" content="MF Digital Media">
+
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+
+
+  <div id="select-folders">Select Folder(s)</div>
+  <button id="add-folders"><span class="symbol">&#xE710;</span> Add Folder(s)</button>
+  <div id="folder-list-container">
+    <div class="folder-list-header">
+      <div><input type="checkbox" name="" id=""></div>
+      <div>Path</div>
+      <div>Images</div>
+      <div><hr></div>
+    </div>
+    <ul class="folder-list">
+      <li class="empty">
+        Click "<span class="symbol">&#xE710;</span> Add Folder(s)" to add a folder
+      </li>
+      <template id="folder-row">
+        <li data-folder-index>
+          <div><input type="checkbox" name="" id=""></div>
+          <div class="folder-path"></div>
+          <div class="folder-image-count"></div>
+          <div><button aria-label="Open Folder"><span class="symbol">&#xE838;</span></button></div>
+          <div><button aria-label="Remove Folder"><span class="symbol">&#xE74D;</span></button></div>
+        </li>
+      </template>
+    </ul>
+  </div>
+  <script src="js/script.js"></script>
+</body>
+</html>

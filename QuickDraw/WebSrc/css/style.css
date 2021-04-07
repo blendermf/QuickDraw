@@ -1,0 +1,163 @@
+/* Reset */
+
+*, 
+*::before, 
+*::after {
+    box-sizing: border-box;
+}
+
+ul[class] {
+    padding: 0;
+    list-style: none;
+}
+
+body {
+    line-height: 1.5;
+}
+
+body, 
+h1, h2, h3, h4, 
+p, 
+ul[class], li {
+    margin: 0;
+}
+
+a:not([class]) {
+    text-decoration-skip-ink: auto;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+input,
+button,
+textarea,
+select {
+    font: inherit;
+}
+
+/* Our Style */
+
+:root {
+    color-scheme: dark;
+
+    --main-bg-value: 30;
+    --main-fg-value: 230;
+    --bg-faded-value: calc((var(--main-bg-value) * (4/5)) + (var(--main-fg-value) * (1/5)));
+    --fg-faded-value: calc((var(--main-fg-value) * (2/3)) + (var(--main-bg-value) * (1/3)));
+    --main-bg-color: rgb(var(--main-bg-value), var(--main-bg-value), var(--main-bg-value));
+    --main-fg-color: rgb(var(--main-fg-value), var(--main-fg-value), var(--main-fg-value));
+    --bg-faded-color: rgb(var(--bg-faded-value), var(--bg-faded-value), var(--bg-faded-value));
+    --fg-faded-color: rgb(var(--fg-faded-value), var(--fg-faded-value), var(--fg-faded-value));
+
+    --spacing-sm: 0.5rem;
+    --spacing-md: calc(var(--spacing-sm) * 2);
+    --spacing-lg: calc(var(--spacing-sm) * 4);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--main-bg-color);
+    color: var(--main-fg-color);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    row-gap: var(--spacing-md);
+    column-gap: var(--spacing-md);
+    padding: var(--spacing-md);
+}
+
+#select-folders {
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+#add-folders {
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 3;
+    grid-column-end: 4;
+    width: fit-content;
+    justify-self: end;
+}
+
+#folder-list-container {
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    display: grid;
+    grid-template-columns: max-content minmax(min-content, max-content) auto max-content max-content;
+    row-gap: var(--spacing-sm);
+    column-gap: var(--spacing-sm);
+}
+#folder-list-container > div.folder-list-header,
+#folder-list-container > ul.folder-list,
+#folder-list-container > ul.folder-list > li {
+    display: contents;
+}
+
+#folder-list-container > div.folder-list-header > div:last-child {
+    grid-column-start: 1;
+    grid-column-end: 6;
+} 
+
+#folder-list-container > div.folder-list-header > div:last-child > hr {
+    margin:0;
+    border: 0;
+    border-bottom: 2px var(--bg-faded-color) solid;
+}
+
+#folder-list-container > div.folder-list-header > div:nth-child(2),
+#folder-list-container > ul.folder-list > li > div:nth-child(2) {
+    padding-right: var(--spacing-md);
+}
+
+#folder-list-container > div.folder-list-header > div > input[type="checkbox"],
+#folder-list-container > ul.folder-list > li > div > input[type="checkbox"]
+{
+    margin-top: 0.4rem;
+}
+
+span.symbol {
+    font-family: 'Segoe MDL2 Assets';
+    vertical-align: bottom;
+    
+}
+
+button:hover {
+    border: 2px solid var(--fg-faded-color);
+
+}
+
+button {
+    border: 2px solid var(--bg-faded-color);
+    border-radius: 0;
+    background-color: var(--bg-faded-color);
+    color: var(--main-fg-color);
+}
+
+input[type="checkbox"]:hover {
+    border: 2px solid var(--fg-faded-color);
+
+}
+
+input[type="checkbox"] {
+    border: 2px solid var(--bg-faded-color);
+    border-radius: 0;
+    background-color: var(--bg-faded-color);
+    color: var(--main-fg-color);
+}
+
+#folder-list-container > ul.folder-list > li.empty {
+    display: none;
+}
+
+#folder-list-container > ul.folder-list > li.empty:only-of-type {
+    display: block;
+    grid-column: span 5;
+}
