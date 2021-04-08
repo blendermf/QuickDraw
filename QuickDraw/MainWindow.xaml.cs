@@ -1,27 +1,14 @@
 ﻿using Microsoft.Web.WebView2.Core;
-using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Forms;
 using System.IO;
 using FolderDialog;
 using System.Runtime.InteropServices;
-using System.Windows.Threading;
 
 namespace QuickDraw
 {
@@ -63,8 +50,6 @@ namespace QuickDraw
             });
 
             webView.CoreWebView2.PostWebMessageAsJson(jsonString);
-
-            Debug.WriteLine(jsonString);
         }
 
         public MainWindow()
@@ -99,19 +84,6 @@ namespace QuickDraw
                 Process.Start(startInfo);
             }
         }
-        public static void DelayAction(int millisecond, Action action)
-        {
-            var timer = new DispatcherTimer();
-            timer.Tick += delegate
-
-            {
-                action.Invoke();
-                timer.Stop();
-            };
-
-            timer.Interval = TimeSpan.FromMilliseconds(millisecond);
-            timer.Start();
-        }
 
         private void GetImages(List<string> folders, int interval)
         {
@@ -129,14 +101,10 @@ namespace QuickDraw
             {
                 string hostName = $"quickdraw-folder{folderNum}.invalid";
 
-                
-
                 webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
                     hostName, folder,
                     Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow
                 );
-
-                Debug.WriteLine($"{hostName}: {folder}");
 
                 folderMappings.Add(hostName);
 
@@ -148,12 +116,8 @@ namespace QuickDraw
 
                 images.UnionWith(files.ToHashSet<string>());
 
-                Debug.WriteLine($"{folder}: {files.Count()}");
-
                 folderNum++;
             }
-
-            Debug.WriteLine(images.Count());
 
             string jsonString = JsonSerializer.Serialize(new Dictionary<string, object>
             {
