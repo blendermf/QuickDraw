@@ -6,6 +6,7 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         xmlns:local="clr-namespace:QuickDraw"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Background="#FF1E1E1E">
+        Title="QuickDraw" Height="450" Width="800" Background="#FF1E1E1E"
+        MinWidth="550" MinHeight="320">
     <wv2:WebView2 Name="webView" Source="http://localhost:8080/index.html"/>
 </Window>

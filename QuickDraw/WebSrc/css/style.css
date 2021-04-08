@@ -58,12 +58,19 @@ select {
 }
 
 body {
+    overflow: hidden;
+    user-select: none;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--main-bg-color);
     color: var(--main-fg-color);
+}
+
+#main-grid {
+    width: 100vw;
+    height: 100vh;
     display: grid;
     grid-template-columns: auto 1fr auto;
-    grid-template-rows: auto auto;
+    grid-template-rows: auto 1fr auto;
     row-gap: var(--spacing-md);
     column-gap: var(--spacing-md);
     padding: var(--spacing-md);
@@ -94,12 +101,43 @@ body {
     grid-template-columns: max-content minmax(min-content, max-content) auto max-content max-content;
     row-gap: var(--spacing-sm);
     column-gap: var(--spacing-sm);
+    align-items: start;
+
+    overflow-y: auto;
+    margin-right: calc(-1 * var(--spacing-md));
+    padding-right: var(--spacing-md);
+    grid-auto-rows: min-content;
+"
 }
 #folder-list-container > div.folder-list-header,
 #folder-list-container > ul.folder-list,
 #folder-list-container > ul.folder-list > li {
     display: contents;
 }
+
+#folder-list-container > div.folder-list-header > div {
+    position: sticky;
+    top:0;
+    padding-bottom: var(--spacing-sm);
+    margin-bottom: calc(var(--spacing-sm) * -1);
+    background-color: var(--main-bg-color);
+}
+
+#folder-list-container > div.folder-list-header > div.hr {
+    top:2rem;
+    padding-bottom:0;
+    margin-bottom: 0;
+}
+
+#folder-list-container > div.folder-list-header > div.spacing {
+    grid-column: span 2;
+    height: 2rem;
+}
+
+#folder-list-container > div.folder-list-header > div.master-checkbox {
+    height: 2rem;
+}
+
 
 #folder-list-container > div.folder-list-header > div:last-child {
     grid-column-start: 1;
@@ -160,4 +198,25 @@ input[type="checkbox"] {
 #folder-list-container > ul.folder-list > li.empty:only-of-type {
     display: block;
     grid-column: span 5;
+}
+
+#footer {
+    grid-row-start: 3;
+    grid-row-end: 4;
+    grid-column: span 3;
+    display: flex;
+    gap: 0.25rem;
+}
+
+#footer > .time-item > input {
+    margin-top: 0.4rem;
+}
+
+#footer > .time-item > label {
+    margin-left: calc(-1 * var(--spacing-sm));
+    padding-left: var(--spacing-sm);
+}
+
+#start {
+    margin-left: auto;
 }

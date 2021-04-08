@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
+using System.IO;
 using FolderDialog;
 using System.Runtime.InteropServices;
 
@@ -28,10 +29,16 @@ namespace QuickDraw
         public string type { get; set; }
     }
 
-    public struct image_folder
+    public class OpenFolderMessage : Message
+    {
+        public string path { get; set; }
+    }
+
+    public struct ImageFolder
     {
         public string Path { get; set; }
-        public uint Index { get; set; }
+
+        public int Count { get; set; }
     }
 
     /// <summary>
@@ -39,24 +46,17 @@ namespace QuickDraw
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<image_folder> Folders;
-
-        private void UpdateWebViewFolders()
+        private void WebViewAddFolders(List<ImageFolder> folders)
         {
             string jsonString = JsonSerializer.Serialize(new Dictionary<string, object>
             {
-                { "type", "UpdateFolders" },
-                { "data", Folders }
+                { "type", "AddFolders" },
+                { "data", folders }
             });
 
             webView.CoreWebView2.PostWebMessageAsJson(jsonString);
 
             Debug.WriteLine(jsonString);
-        }
-
-        public void AddImageFolder(string folderPath)
-        {
-            Folders.Add(new image_folder { Path = folderPath, Index = (uint)Folders.Count });
         }
 
         public MainWindow()
@@ -65,7 +65,6 @@ namespace QuickDraw
 
             InitializeAsync();
 
-            Folders = new List<image_folder>();
         }
 
         private async void InitializeAsync()
@@ -79,10 +78,27 @@ namespace QuickDraw
             webView.CoreWebView2.WebMessageReceived += ReceiveMessage;
         }
 
+        private void OpenFolderInExplorer(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    Arguments = path,
+                    FileName = "explorer.exe"
+                };
+
+                Process.Start(startInfo);
+            }
+        }
+
         private async void OpenFolders()
         {
-            uint count = await Task<uint>.Run(() =>
+
+            List <ImageFolder> folders  = await Task<uint>.Run(() =>
             {
+                List<ImageFolder> folders = new List<ImageFolder>();
+
                 IFileOpenDialog dialog = null;
                 uint count = 0;
                 try
@@ -95,6 +111,7 @@ namespace QuickDraw
                         | FileOpenDialogOptions.PathMustExist
                     );
                     dialog.Show(IntPtr.Zero);
+
 
                     IShellItemArray shellItemArray = null;
                     dialog.GetResults(out shellItemArray);
@@ -117,39 +134,50 @@ namespace QuickDraw
                                 filepath = Marshal.PtrToStringAuto(i_result);
                                 Marshal.FreeCoTaskMem(i_result);
 
-                                AddImageFolder(filepath);
+                                var files = Directory.EnumerateFiles(filepath, "*.*", SearchOption.AllDirectories)
+                                    .Where(s => s.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                                            || s.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                                            || s.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+
+                                folders.Add(new ImageFolder { Path = filepath, Count = files.Count() });
                             }
                         }
                     }
+                }
+                catch(System.Runtime.InteropServices.COMException)
+                {
+                    // No files or other weird error, do nothing.
                 }
                 finally
                 {
                     if (dialog != null)
                         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(dialog);
                 }
-                return count;
+                return folders;
             });
 
-            if (count > 0)
+            if (folders.Count > 0)
             {
-                UpdateWebViewFolders();
+                WebViewAddFolders(folders);
             }
         }
 
         private void ReceiveMessage(object sender, CoreWebView2WebMessageReceivedEventArgs args)
         {
             Message message = JsonSerializer.Deserialize<Message>(args.WebMessageAsJson);
-            /*
+            
             switch(message.type)
             {
                 case "addFolders":
-                    FolderBrowsesr
+                    OpenFolders();
+                    break;
+                case "openFolder":
+                    OpenFolderMessage openFolderMessage = JsonSerializer.Deserialize<OpenFolderMessage>(args.WebMessageAsJson);
+                    OpenFolderInExplorer(openFolderMessage.path);
                     break;
                 default:
                     break;
-            }*/
-
-            OpenFolders();
+            }
         }
     }
 }
