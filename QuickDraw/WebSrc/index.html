@@ -63,6 +63,27 @@
       <button id="start"><span class="symbol">&#xE768;</span> Start</button>
     </div>
   </div>
-  <script src="js/script.js"></script>
+
+  <div id="slideshow">
+    <img id="slideshow-image" class="visible">
+    <div id="topbar">
+        <div class="left">
+            <button id="pause" disabled=true>Pause</button>
+            <button id="continue" disabled=true>Continue</button>
+        </div>
+        <div class="center">
+            <div id="slideshow-progress-bar" style="display: none">
+                    <div id="slideshow-progress" style="width:0%"></div>
+            </div>
+        </div>
+        <div class="right">
+            <button id="grayscale">Grayscale</button>
+            <button id="previous">Previous</button>
+            <button id="skip">Skip</button>
+            <button id="stop">Stop Session</button>
+        </div>
+    </div>
+  </div>
+  <script type="module" src="js/script.js"></script>
 </body>
 </html>

@@ -20,7 +20,6 @@
         };
 
         var masterCheckboxElem = document.querySelector('#folder-list-container > div.folder-list-header > div.master-checkbox > input');
-
         function UpdateFoldersFromDB() {
             var getAllTransaction = db.transaction(["folders"], "readonly");
     
@@ -29,7 +28,7 @@
             objectStore.getAll().onsuccess = e => {
                 var folders = e.target.result;
     
-                foldersElem = document.querySelector("#folder-list-container > ul.folder-list");
+                var foldersElem = document.querySelector("#folder-list-container > ul.folder-list");
                 while (foldersElem.lastChild.nodeType === Node.TEXT_NODE || !foldersElem.lastChild.classList.contains("empty")) {
                     foldersElem.removeChild(foldersElem.lastChild);
                 }
@@ -114,11 +113,38 @@
         var template = document.querySelector("#folder-row");
         console.log(template);
     
-        addFoldersElem = document.getElementById("add-folders");
+        var addFoldersElem = document.getElementById("add-folders");
         addFoldersElem.addEventListener('click', event => {
             window.chrome.webview.postMessage(
                 {
                     type: "addFolders"
+                }
+            );
+        });
+
+        var startElem = document.getElementById("start");
+        startElem.addEventListener('click', e => {
+            var folderElems = document.querySelectorAll('#folder-list-container > ul.folder-list > li:not(.empty)');
+            var folders = [];
+
+            folderElems.forEach(folderElem => {
+                var checkboxElem = folderElem.querySelector("input[type='checkbox']");
+                
+                if (checkboxElem.checked) {
+                    var pathElem = folderElem.querySelector("div.folder-path");
+                    folders.push(pathElem.innerHTML);
+                }
+            });
+
+            if (folders.length === 0)
+            {
+                // no folders selected, do something
+            }
+
+            window.chrome.webview.postMessage(
+                {
+                    type: "getImages",
+                    folders: folders
                 }
             );
         });

@@ -21,6 +21,7 @@ using System.Windows.Forms;
 using System.IO;
 using FolderDialog;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 
 namespace QuickDraw
 {
@@ -32,6 +33,11 @@ namespace QuickDraw
     public class OpenFolderMessage : Message
     {
         public string path { get; set; }
+    }
+
+    public class GetImagesMessage : Message
+    {
+        public List<string> folders { get; set; }
     }
 
     public struct ImageFolder
@@ -46,6 +52,8 @@ namespace QuickDraw
     /// </summary>
     public partial class MainWindow : Window
     {
+        List<string> folderMappings = new List<string>();
+
         private void WebViewAddFolders(List<ImageFolder> folders)
         {
             string jsonString = JsonSerializer.Serialize(new Dictionary<string, object>
@@ -71,8 +79,8 @@ namespace QuickDraw
         {
             await webView.EnsureCoreWebView2Async(null);
             webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
-                "quickdraw.assets", "WebSrc",
-                Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.DenyCors
+                "quickdraw.invalid", "WebSrc",
+                Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow
             );
 
             webView.CoreWebView2.WebMessageReceived += ReceiveMessage;
@@ -90,6 +98,74 @@ namespace QuickDraw
 
                 Process.Start(startInfo);
             }
+        }
+        public static void DelayAction(int millisecond, Action action)
+        {
+            var timer = new DispatcherTimer();
+            timer.Tick += delegate
+
+            {
+                action.Invoke();
+                timer.Stop();
+            };
+
+            timer.Interval = TimeSpan.FromMilliseconds(millisecond);
+            timer.Start();
+        }
+
+        private void GetImages(List<string> folders, int interval)
+        {
+            HashSet<string> images = new HashSet<string>();
+            // clear mappings
+            foreach (string hostname in folderMappings)
+            {
+                webView.CoreWebView2.ClearVirtualHostNameToFolderMapping(hostname);
+            }
+            folderMappings.Clear();
+
+            int folderNum = 0;
+
+            foreach (string folder in folders)
+            {
+                string hostName = $"quickdraw-folder{folderNum}.invalid";
+
+                
+
+                webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
+                    hostName, folder,
+                    Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow
+                );
+
+                Debug.WriteLine($"{hostName}: {folder}");
+
+                folderMappings.Add(hostName);
+
+                var files = Directory.EnumerateFiles(folder, "*.*", SearchOption.AllDirectories)
+                .Where(s => s.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                || s.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                || s.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                .Select(p => p.Replace(folder, $"https://{hostName}"));
+
+                images.UnionWith(files.ToHashSet<string>());
+
+                Debug.WriteLine($"{folder}: {files.Count()}");
+
+                folderNum++;
+            }
+
+            Debug.WriteLine(images.Count());
+
+            string jsonString = JsonSerializer.Serialize(new Dictionary<string, object>
+            {
+                { "interval", interval },
+                { "images", images }
+            });
+
+            webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync($@"
+                var slideshowData = {jsonString};
+            ");
+
+            webView.CoreWebView2.Navigate("http://localhost:8080/slideshow.html");
         }
 
         private async void OpenFolders()
@@ -174,6 +250,10 @@ namespace QuickDraw
                 case "openFolder":
                     OpenFolderMessage openFolderMessage = JsonSerializer.Deserialize<OpenFolderMessage>(args.WebMessageAsJson);
                     OpenFolderInExplorer(openFolderMessage.path);
+                    break;
+                case "getImages":
+                    GetImagesMessage getImagesMessage = JsonSerializer.Deserialize<GetImagesMessage>(args.WebMessageAsJson);
+                    GetImages(getImagesMessage.folders, 30 * 1000);
                     break;
                 default:
                     break;

@@ -45,13 +45,16 @@ select {
 
     --main-bg-value: 30;
     --main-fg-value: 230;
+    --bg-darker-value: calc(var(--main-bg-value) * 0.5);
     --bg-faded-value: calc((var(--main-bg-value) * (4/5)) + (var(--main-fg-value) * (1/5)));
     --fg-faded-value: calc((var(--main-fg-value) * (2/3)) + (var(--main-bg-value) * (1/3)));
     --main-bg-color: rgb(var(--main-bg-value), var(--main-bg-value), var(--main-bg-value));
     --main-fg-color: rgb(var(--main-fg-value), var(--main-fg-value), var(--main-fg-value));
     --bg-faded-color: rgb(var(--bg-faded-value), var(--bg-faded-value), var(--bg-faded-value));
     --fg-faded-color: rgb(var(--fg-faded-value), var(--fg-faded-value), var(--fg-faded-value));
+    --bg-darker-color: rgb(var(--bg-darker-value), var(--bg-darker-value), var(--bg-darker-value));
 
+    --spacing-xs: calc(var(--spacing-sm) * 0.5);;
     --spacing-sm: 0.5rem;
     --spacing-md: calc(var(--spacing-sm) * 2);
     --spacing-lg: calc(var(--spacing-sm) * 4);
@@ -107,7 +110,6 @@ body {
     margin-right: calc(-1 * var(--spacing-md));
     padding-right: var(--spacing-md);
     grid-auto-rows: min-content;
-"
 }
 #folder-list-container > div.folder-list-header,
 #folder-list-container > ul.folder-list,
@@ -175,8 +177,11 @@ button:hover {
 button {
     border: 2px solid var(--bg-faded-color);
     border-radius: 0;
-    background-color: var(--bg-faded-color);
     color: var(--main-fg-color);
+}
+
+#main-grid button {
+    background-color: var(--bg-faded-color);
 }
 
 input[type="checkbox"]:hover {
@@ -205,7 +210,7 @@ input[type="checkbox"] {
     grid-row-end: 4;
     grid-column: span 3;
     display: flex;
-    gap: 0.25rem;
+    gap: var(--spacing-xs);
 }
 
 #footer > .time-item > input {
@@ -219,4 +224,137 @@ input[type="checkbox"] {
 
 #start {
     margin-left: auto;
+}
+
+
+
+/* -----------------------
+    SLIDESHOW
+   ---------------------*/
+
+
+
+#slideshow {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 9999;
+    background-color: rgba(0, 0, 0, 0);
+    /*backdrop-filter: blur(0px);*/
+    /* transition-property: background-color, backdrop-filter, visibility; */
+    /* transition-duration: 1s; */
+    /* transition-delay: 1s; */
+    visibility: hidden;
+    user-select: none;
+}
+
+#slideshow.visible {
+    background-color: var(--bg-darker-color);
+    /*backdrop-filter: blur(20px);*/
+    /* transition-property: background-color, backdrop-filter, visibility; */
+    /* transition-duration: 1s; */
+    /* transition-delay: 0s; */
+    visibility: visible;
+}
+
+#slideshow-image {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    /* transition-property: opacity; */
+    /* transition-duration: 1s; */
+    /* transition-delay: 0s; */
+}
+
+#slideshow-image.grayscale {
+    filter: grayscale(1.0);
+}
+
+#slideshow.visible > #slideshow-image.visible {
+    opacity: 1;
+    /* transition-property: opacity; */
+    /* transition-duration: 1s; */
+    /* transition-delay: 1s; */
+    cursor: pointer;
+}
+
+#slideshow.visible > #topbar {
+    opacity: 1;
+    /* transition-property: opacity; */
+    /* transition-duration: 1s; */
+    /* transition-delay: 1s; */
+}
+
+#topbar {
+    position:fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 15px 15px;
+    opacity: 0;
+    /* transition-property: opacity; */
+    /* transition-duration: 1s; */
+    /* transition-delay: 0s; */
+}
+
+#topbar > div.left {
+    display: flex;
+    justify-content: flex-start;
+}
+
+#topbar > div.left > button{
+    margin-right: 5px;
+}
+
+#topbar > div.right {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#topbar > div.right > button {
+    margin-left: 5px;
+}
+
+#topbar > div.center {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+#topbar button {
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    color: #ddd;
+    border: 2px solid var;
+    padding: var(--spacing-xs);
+    font-size: 0.9em;
+    vertical-align: top;
+}
+
+#topbar button:disabled {
+    display: none;
+}
+
+#topbar #slideshow-progress-bar {
+    background-color: #eee;
+    height: 3px;
+    max-width: 200px;
+    width: 80%;
+    border-radius: 2px;
+    border-width: 0px;
+    padding: 1px;
+}
+
+#topbar #slideshow-progress {
+    background-color: grey;
+    height: 3px;
+    margin: 0px;
+    border-radius: 1px;
+    border-width: 0px;
 }
