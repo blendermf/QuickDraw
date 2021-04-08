@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
-using FolderDialog;
 using System.Runtime.InteropServices;
 
 namespace QuickDraw
@@ -38,9 +37,14 @@ namespace QuickDraw
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, System.Windows.Forms.IWin32Window
     {
         List<string> folderMappings = new List<string>();
+
+        public IntPtr Handle
+        {
+            get { return new System.Windows.Interop.WindowInteropHelper(this).Handle; }
+        }
 
         private void WebViewAddFolders(List<ImageFolder> folders)
         {
@@ -120,17 +124,28 @@ namespace QuickDraw
                 folderNum++;
             }
 
-            string jsonString = JsonSerializer.Serialize(new Dictionary<string, object>
+            if (images.Count > 0)
             {
-                { "interval", interval * 1000 },
-                { "images", images }
-            });
+                string jsonString = JsonSerializer.Serialize(new Dictionary<string, object>
+                {
+                    { "interval", interval * 1000 },
+                    { "images", images }
+                });
 
-            webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync($@"
-                var slideshowData = {jsonString};
-            ");
+                webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync($@"
+                    var slideshowData = {jsonString};
+                ");
 
-            webView.CoreWebView2.Navigate("http://localhost:8080/slideshow.html");
+                webView.CoreWebView2.Navigate("http://localhost:8080/slideshow.html");
+            } else
+            {
+                using (DialogCenteringService centeringService = new DialogCenteringService(this))
+                {
+                    MessageBox.Show(this, "No images found! Select one or more folders.", "QuickDraw", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
+            } 
+
+
         }
 
         private async void OpenFolders()

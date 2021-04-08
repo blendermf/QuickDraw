@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace FolderDialog
+namespace QuickDraw
 {
     // Disable warning CS0108: 'x' hides inherited member 'y'. Use the new keyword if hiding was intended.
     #pragma warning disable 0108
