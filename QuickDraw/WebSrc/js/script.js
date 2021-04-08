@@ -20,6 +20,36 @@
         };
 
         var masterCheckboxElem = document.querySelector('#folder-list-container > div.folder-list-header > div.master-checkbox > input');
+
+        var masterCheckboxEnabled = localStorage.getItem('masterEnabled');
+        if (masterCheckboxEnabled === null) {
+            localStorage.setItem('masterEnabled', false);
+        } else {
+            masterCheckboxElem.checked = localStorage.getItem('masterEnabled') === 'true';
+        }
+
+        masterCheckboxElem.addEventListener('click', e => {
+            var checkboxElems = document.querySelectorAll('#folder-list-container > ul.folder-list > li > div > input');
+
+            var enabledTransaction = db.transaction(['folders'], 'readwrite');
+            var objectStore = enabledTransaction.objectStore("folders");
+
+            var masterEnabled = e.target.checked;
+
+            checkboxElems.forEach(checkboxElem => {
+                console.log(checkboxElem.parentElement.parentElement.getAttribute('data-folder-path'));
+                objectStore.get(checkboxElem.parentElement.parentElement.getAttribute('data-folder-path')).onsuccess = e => {
+                    var folder = e.target.result;
+                    folder.enabled = masterEnabled;
+                    objectStore.put(folder);
+                };
+                console.log(checkboxElem);
+                checkboxElem.checked = masterEnabled;
+            });
+
+            localStorage.setItem('masterEnabled', masterEnabled);
+        });
+
         function UpdateFoldersFromDB() {
             var getAllTransaction = db.transaction(["folders"], "readonly");
     
@@ -36,6 +66,9 @@
                 for (const folderItem of folders)
                 {
                     var clone = template.content.cloneNode(true);
+
+                    var liElem = clone.querySelector('li');
+                    liElem.setAttribute("data-folder-path", folderItem.Path)
     
                     var pathElem = clone.querySelector("div.folder-path");
                     pathElem.innerHTML = folderItem.Path;
@@ -54,11 +87,21 @@
                     });
 
                     var checkboxElem = clone.querySelector("input[type='checkbox']");
+                    checkboxElem.checked = folderItem.enabled;
                     checkboxElem.addEventListener('click', e => {
                         if (!e.target.checked)
                         {
+                            localStorage.setItem('masterEnabled', e.target.checked);
                             masterCheckboxElem.checked = e.target.checked;
                         }
+
+                        var enabledTransaction = db.transaction(['folders'], 'readwrite');
+
+                        var objectStore = enabledTransaction.objectStore("folders");
+
+                        var folder = folderItem;
+                        folder.enabled = e.target.checked;
+                        objectStore.put(folder);
                     });
 
                     foldersElem.appendChild(clone);
@@ -98,15 +141,6 @@
                 UpdateFoldersFromDB();
             };
         }
-        
-        masterCheckboxElem.addEventListener('click', e => {
-            var checkboxElems = document.querySelectorAll('#folder-list-container > ul.folder-list > li > div > input');
-
-            checkboxElems.forEach(checkboxElem => {
-                console.log(checkboxElem);
-                checkboxElem.checked = e.target.checked;
-            });
-        });
 
         UpdateFoldersFromDB();
 
@@ -131,8 +165,7 @@
                 var checkboxElem = folderElem.querySelector("input[type='checkbox']");
                 
                 if (checkboxElem.checked) {
-                    var pathElem = folderElem.querySelector("div.folder-path");
-                    folders.push(pathElem.innerHTML);
+                    folders.push(folderElem.getAttribute('data-folder-path'));
                 }
             });
 
@@ -158,6 +191,7 @@
 
                     var objectStore = addTransaction.objectStore("folders");
                     data.data.forEach(folder => {
+                        folder.enabled = false;
                         objectStore.count(folder.Path).onsuccess = e => {
                             if (e.target.result > 0)
                             {
