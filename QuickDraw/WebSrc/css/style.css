@@ -232,8 +232,6 @@ input[type="checkbox"] {
     SLIDESHOW
    ---------------------*/
 
-
-
 #slideshow {
     position: fixed;
     top: 0;
@@ -278,7 +276,6 @@ input[type="checkbox"] {
     /* transition-property: opacity; */
     /* transition-duration: 1s; */
     /* transition-delay: 1s; */
-    cursor: pointer;
 }
 
 #slideshow.visible > #topbar {

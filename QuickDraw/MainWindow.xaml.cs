@@ -25,6 +25,7 @@ namespace QuickDraw
     public class GetImagesMessage : Message
     {
         public List<string> folders { get; set; }
+        public int interval { get; set; }
     }
 
     public struct ImageFolder
@@ -121,7 +122,7 @@ namespace QuickDraw
 
             string jsonString = JsonSerializer.Serialize(new Dictionary<string, object>
             {
-                { "interval", interval },
+                { "interval", interval * 1000 },
                 { "images", images }
             });
 
@@ -217,7 +218,7 @@ namespace QuickDraw
                     break;
                 case "getImages":
                     GetImagesMessage getImagesMessage = JsonSerializer.Deserialize<GetImagesMessage>(args.WebMessageAsJson);
-                    GetImages(getImagesMessage.folders, 30 * 1000);
+                    GetImages(getImagesMessage.folders, getImagesMessage.interval);
                     break;
                 default:
                     break;

@@ -19,6 +19,26 @@
             console.error("Database error: " + e.target.error);
         };
 
+        var timeInputElems = document.querySelectorAll('#footer > div.time-item > input');
+        var timeInterval = localStorage.getItem('timeInterval')
+        if (timeInterval === null) {
+            timeInterval = '60';
+            localStorage.setItem('timeInterval', timeInterval);
+        }
+
+        timeInputElems.forEach(timeInputElem => {
+            timeInputElem.checked = false;
+
+            if (timeInputElem.value === timeInterval)
+            {
+                timeInputElem.checked = true;
+            }
+
+            timeInputElem.addEventListener('click', e => {
+                localStorage.setItem('timeInterval', timeInputElem.value);
+            });
+        })
+
         var masterCheckboxElem = document.querySelector('#folder-list-container > div.folder-list-header > div.master-checkbox > input');
 
         var masterCheckboxEnabled = localStorage.getItem('masterEnabled');
@@ -177,7 +197,8 @@
             window.chrome.webview.postMessage(
                 {
                     type: "getImages",
-                    folders: folders
+                    folders: folders,
+                    interval: parseInt(localStorage.getItem('timeInterval'))
                 }
             );
         });

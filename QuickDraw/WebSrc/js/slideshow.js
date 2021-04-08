@@ -49,23 +49,7 @@ export class Slideshow {
         };
 
         stopButton.onclick = () => {
-            if (slideshowData.interval !== 0) {
-                this.currentTimer.pause();
-                this.currentTimer = null;
-            }
-
-            continueButton.disabled = true;
-            pauseButton.disabled = false;
-            slideshow.classList.remove('visible');
-            document.body.classList.remove('noScroll');
-            slideshow_image.src="";
-            slideshow_image.classList.remove("visible");
-            progress.style.width = "0%";
-            progress_bar.style.display = "none";
-            if (this.currentInterval !== null) {
-                clearInterval(this.currentInterval);
-                this.currentInterval = null;
-            }
+            window.location.href="/index.html";
         };
 
         grayscaleButton.onclick = () => {
