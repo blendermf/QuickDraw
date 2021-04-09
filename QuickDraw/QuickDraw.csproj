@@ -22,6 +22,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <SignAssembly>false</SignAssembly>
     <StartupObject />
+    <Version>1.0.1</Version>
+    <PackageReleaseNotes>Improved clickability of slideshow buttons by adding labels.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
