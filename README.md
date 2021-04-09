@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">QuickDraw</h1>
-<div align="center">Gesture Drawing App</div>
+<h3 align="center">Gesture Drawing App</h3>
 
 Allows you to select folders on your computer to pull reference images from, and then shows you a slideshow of random images. 
 
