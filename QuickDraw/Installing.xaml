@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuickDraw"
         mc:Ignorable="d"
-        Title="Installing..." Height="179" Width="399" Background="#FF1E1E1E" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight">
+        Title="Installing..." Height="179" Width="399" Background="#FF1E1E1E" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" WindowStyle="SingleBorderWindow" Topmost="True">
     <Grid Height="146" Width="390" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Label Content="Installing Microsoft Edge WebView2..." HorizontalAlignment="Left" Margin="58,34,0,0" VerticalAlignment="Top" Foreground="#FFE6E6E6" FontSize="16" />
         <ProgressBar Margin="10,0,10,10" IsIndeterminate="True" Height="19" VerticalAlignment="Bottom"/>

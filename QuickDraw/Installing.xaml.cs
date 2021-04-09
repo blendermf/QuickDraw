@@ -19,9 +19,16 @@ namespace QuickDraw
     /// </summary>
     public partial class InstallingWindow : Window
     {
+        public void OnClosed(object sender, EventArgs args)
+        {
+            ((App)Application.Current).Shutdown();
+        }
+
         public InstallingWindow()
         {
             InitializeComponent();
+
+            this.Closed += OnClosed;
         }
     }
 }

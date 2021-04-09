@@ -69,9 +69,16 @@ namespace QuickDraw
             webView.CoreWebView2.PostWebMessageAsJson(jsonString);
         }
 
+        public void OnClosed(object sender, EventArgs args)
+        {
+            ((App)Application.Current).Shutdown();
+        }
+
         public QuickDrawWindow()
         {
             InitializeComponent();
+
+            this.Closed += OnClosed;
 
             InitializeAsync();
 
