@@ -13,6 +13,6 @@ Perfect for gesture drawing, or quick studies.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/blendermf/QuickDraw/master/docs/img/Screenshot1.png" alt="Screenshot1">
-
+<br/><br/>
 <img src="https://raw.githubusercontent.com/blendermf/QuickDraw/master/docs/img/Screenshot2.png" alt="Screenshot2">
 </p>
