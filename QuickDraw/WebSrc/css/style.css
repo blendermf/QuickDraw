@@ -166,7 +166,8 @@ body {
 span.symbol {
     font-family: 'Segoe MDL2 Assets';
     vertical-align: bottom;
-    
+    margin-bottom: -0.05rem;
+    display: inline-block;
 }
 
 button:hover {
