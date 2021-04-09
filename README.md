@@ -14,5 +14,5 @@ Perfect for gesture drawing, or quick studies.
 <p align="center">
 <img width="784" height="440" src="https://raw.githubusercontent.com/blendermf/QuickDraw/master/docs/img/Screenshot1.png" alt="Screenshot1">
 
-<img width="784" height="Screenshot2" src="https://raw.githubusercontent.com/blendermf/QuickDraw/master/docs/img/ScreenShot2.png" alt="Screenshot2">
+<img width="784" height="Screenshot2" src="https://raw.githubusercontent.com/blendermf/QuickDraw/master/docs/img/Screenshot2.png" alt="Screenshot2">
 </p>
