@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Windows.Input;
 
 namespace QuickDraw
 {
@@ -37,10 +38,21 @@ namespace QuickDraw
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, System.Windows.Forms.IWin32Window
+    public partial class QuickDrawWindow : Window, System.Windows.Forms.IWin32Window
     {
-        List<string> folderMappings = new List<string>();
+        public static readonly RoutedCommand StopPropagation = new RoutedCommand();
+        private void ExecutedStopPropagation(object sender, ExecutedRoutedEventArgs e)
+        {
+            // Do nothing, disabling this key combo
+            e.Handled = true;
+        }
 
+        private void CanExecuteStopPropagation(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        List<string> folderMappings = new List<string>();
         public IntPtr Handle
         {
             get { return new System.Windows.Interop.WindowInteropHelper(this).Handle; }
@@ -57,7 +69,7 @@ namespace QuickDraw
             webView.CoreWebView2.PostWebMessageAsJson(jsonString);
         }
 
-        public MainWindow()
+        public QuickDrawWindow()
         {
             InitializeComponent();
 
@@ -68,6 +80,11 @@ namespace QuickDraw
         private async void InitializeAsync()
         {
             await webView.EnsureCoreWebView2Async(null);
+
+            webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+            webView.CoreWebView2.Settings.IsZoomControlEnabled = false;
+            webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
+
             webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
                 "quickdraw.invalid", "WebSrc",
                 Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow
@@ -144,13 +161,10 @@ namespace QuickDraw
                     MessageBox.Show(this, "No images found! Select one or more folders.", "QuickDraw", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
             } 
-
-
         }
 
         private async void OpenFolders()
         {
-
             List <ImageFolder> folders  = await Task<uint>.Run(() =>
             {
                 List<ImageFolder> folders = new List<ImageFolder>();
@@ -167,7 +181,6 @@ namespace QuickDraw
                         | FileOpenDialogOptions.PathMustExist
                     );
                     dialog.Show(IntPtr.Zero);
-
 
                     IShellItemArray shellItemArray = null;
                     dialog.GetResults(out shellItemArray);

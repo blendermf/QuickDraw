@@ -15,7 +15,6 @@
         var db = e.target.result;
 
         db.onerror = e => {
-            console.log(e);
             console.error("Database error: " + e.target.error);
         };
 
@@ -57,13 +56,11 @@
             var masterEnabled = e.target.checked;
 
             checkboxElems.forEach(checkboxElem => {
-                console.log(checkboxElem.parentElement.parentElement.getAttribute('data-folder-path'));
                 objectStore.get(checkboxElem.parentElement.parentElement.getAttribute('data-folder-path')).onsuccess = e => {
                     var folder = e.target.result;
                     folder.enabled = masterEnabled;
                     objectStore.put(folder);
                 };
-                console.log(checkboxElem);
                 checkboxElem.checked = masterEnabled;
             });
 
@@ -130,8 +127,6 @@
         }
 
         function OpenFolder(path) {
-            console.log("Open Folder: " + path);
-
             window.chrome.webview.postMessage(
                 {
                     type: "openFolder",
@@ -141,8 +136,6 @@
         }
 
         function RemoveFolder(path) {
-            console.log("Remove Folder: " + path);
-
             var removeTransaction = db.transaction(["folders"], "readwrite");
 
             var objectStore = removeTransaction.objectStore("folders");
@@ -165,7 +158,6 @@
         UpdateFoldersFromDB();
 
         var template = document.querySelector("#folder-row");
-        console.log(template);
     
         var addFoldersElem = document.getElementById("add-folders");
         addFoldersElem.addEventListener('click', event => {

@@ -6,10 +6,37 @@
 	  <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <ApplicationIcon>QuickDraw.ico</ApplicationIcon>
+    <Authors>Matthew Fraser</Authors>
+    <Company>MF Digital Media</Company>
+    <Description>Gesture drawing app that shows you random images to draw.</Description>
+    <Copyright>Copyright © 2021 MF Digital Media</Copyright>
+    <PackageProjectUrl>https://github.com/blendermf/QuickDraw</PackageProjectUrl>
+    <PackageIcon>QuickDraw.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/blendermf/QuickDraw</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>Drawing, Gesture, Quick, Poses</PackageTags>
+    <NeutralLanguage>en-CA</NeutralLanguage>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <SignAssembly>false</SignAssembly>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.824-prerelease" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Pictures\QuickDraw.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
