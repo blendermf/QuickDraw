@@ -13,7 +13,7 @@
                     Executed="ExecutedStopPropagation"
                     CanExecute="CanExecuteStopPropagation" />
     </Window.CommandBindings>
-    <wv2:WebView2 Name="webView" Source="https://quickdraw.invalid/index.html">
+    <wv2:WebView2 Name="webView">
         <wv2:WebView2.InputBindings>
             <!-- Removing unwanted keys from this listing
                  https://docs.microsoft.com/en-us/microsoft-edge/webview2/concepts/browserfeatures#additional-keyboard-shortcuts-information

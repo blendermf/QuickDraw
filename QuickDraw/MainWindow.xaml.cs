@@ -79,7 +79,14 @@ namespace QuickDraw
 
         private async void InitializeAsync()
         {
-            await webView.EnsureCoreWebView2Async(null);
+            string userDataFolder = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"QuickDraw");
+            System.IO.Directory.CreateDirectory(userDataFolder);
+            CoreWebView2EnvironmentOptions options = new CoreWebView2EnvironmentOptions();
+            CoreWebView2Environment env = CoreWebView2Environment.CreateAsync("", userDataFolder, options).GetAwaiter().GetResult();
+
+            await webView.EnsureCoreWebView2Async(env);
+
+            webView.Source = new Uri("https://quickdraw.invalid/index.html");
 
             webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
             webView.CoreWebView2.Settings.IsZoomControlEnabled = false;
@@ -153,7 +160,7 @@ namespace QuickDraw
                     var slideshowData = {jsonString};
                 ");
 
-                webView.CoreWebView2.Navigate("http://localhost:8080/slideshow.html");
+                webView.CoreWebView2.Navigate("https://quickdraw.invalid/slideshow.html");
             } else
             {
                 using (DialogCenteringService centeringService = new DialogCenteringService(this))
