@@ -16,3 +16,7 @@ Perfect for gesture drawing, or quick studies.
 <br/><br/>
 <img src="https://raw.githubusercontent.com/blendermf/QuickDraw/master/docs/img/Screenshot2.png" alt="Screenshot2">
 </p>
+
+## Download
+
+Go to the [Releases](https://github.com/blendermf/QuickDraw/releases) page and download the latest version.
