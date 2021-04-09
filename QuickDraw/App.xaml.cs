@@ -102,6 +102,7 @@ namespace QuickDraw
 
                 if (HasWebView2())
                 {
+                    installingWindow.Hide();
                     MainWindow = new QuickDrawWindow();
                     MainWindow.Show();
                     return;
