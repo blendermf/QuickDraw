@@ -63,7 +63,7 @@
 	</Target>
 	
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="pwsh.exe -ExecutionPolicy Unrestricted -File &quot;$(ProjectDir)package.ps1&quot; -PackageName &quot;$(TargetName)&quot; -PackageVersion &quot;$(Version)&quot; -TargetDir &quot;$(TargetDir)\&quot;" />
+	  <Exec Command="powershell.exe -ExecutionPolicy Unrestricted -File &quot;$(ProjectDir)package.ps1&quot; -PackageName &quot;$(TargetName)&quot; -PackageVersion &quot;$(Version)&quot; -TargetDir &quot;$(TargetDir)\&quot;" />
 	</Target>
 
 </Project>
