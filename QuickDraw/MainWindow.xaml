@@ -13,30 +13,5 @@
                     Executed="ExecutedStopPropagation"
                     CanExecute="CanExecuteStopPropagation" />
     </Window.CommandBindings>
-    <wv2:WebView2 Name="webView">
-        <wv2:WebView2.InputBindings>
-            <!-- Removing unwanted keys from this listing
-                 https://docs.microsoft.com/en-us/microsoft-edge/webview2/concepts/browserfeatures#additional-keyboard-shortcuts-information
-                 NOTE: Some keys are disabled because their functionality is disabled in CoreWebView2
-            -->
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="F" Modifiers="Ctrl"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="G" Modifiers="Ctrl"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="G" Modifiers="Ctrl+Shift"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="P" Modifiers="Ctrl"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="R" Modifiers="Ctrl"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="F5"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="BrowserRefresh"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="R" Modifiers="Ctrl+Shift"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="F5" Modifiers="Ctrl"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="F5" Modifiers="Shift"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="BrowserRefresh" Modifiers="Ctrl"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="BrowserRefresh" Modifiers="Shift"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="F3"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="F3" Modifiers="Shift"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="BrowserBack"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Gesture="Alt+Left"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Key="BrowserForward"/>
-            <KeyBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}" Gesture="Alt+Right"/>
-        </wv2:WebView2.InputBindings>
-    </wv2:WebView2>
+    <wv2:WebView2 Name="webView"/>
 </Window>

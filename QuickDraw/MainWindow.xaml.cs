@@ -93,16 +93,38 @@ namespace QuickDraw
 
             await webView.EnsureCoreWebView2Async(env);
 
-            webView.Source = new Uri("https://quickdraw.invalid/index.html");
-
-            webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
-            webView.CoreWebView2.Settings.IsZoomControlEnabled = false;
-            webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
-
+#if DEBUG
+            webView.Source = new Uri("http://localhost:8080/index.html");
+#else
             webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
                 "quickdraw.invalid", "WebSrc",
                 Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow
             );
+            webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+            webView.CoreWebView2.Settings.IsZoomControlEnabled = false;
+            webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
+
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.F, ModifierKeys.Control)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.G, ModifierKeys.Control)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.G, ModifierKeys.Control | ModifierKeys.Shift)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.P, ModifierKeys.Control)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.R, ModifierKeys.Control)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.F5)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.BrowserRefresh)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.R, ModifierKeys.Control | ModifierKeys.Shift)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.F5, ModifierKeys.Control)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.F5, ModifierKeys.Shift)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.BrowserRefresh, ModifierKeys.Control)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.BrowserRefresh, ModifierKeys.Shift)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.F3)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.F3, ModifierKeys.Shift)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.BrowserBack)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.Left, ModifierKeys.Alt)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.BrowserForward)));
+            webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.Right, ModifierKeys.Alt)));
+
+            webView.Source = new Uri("https://quickdraw.invalid/index.html");
+#endif
 
             webView.CoreWebView2.WebMessageReceived += ReceiveMessage;
         }

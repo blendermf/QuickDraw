@@ -79,9 +79,8 @@
                 while (foldersElem.lastChild.nodeType === Node.TEXT_NODE || !foldersElem.lastChild.classList.contains("empty")) {
                     foldersElem.removeChild(foldersElem.lastChild);
                 }
-    
-                for (const folderItem of folders)
-                {
+
+                var createFolderElem = folderItem => {
                     var clone = template.content.cloneNode(true);
 
                     var liElem = clone.querySelector('li');
@@ -105,11 +104,17 @@
 
                     var checkboxElem = clone.querySelector("input[type='checkbox']");
                     checkboxElem.checked = folderItem.enabled;
-                    checkboxElem.addEventListener('click', e => {
-                        if (!e.target.checked)
+
+                    var toggleFolderEvent = e => {
+                        if (e.target !== checkboxElem)
                         {
-                            localStorage.setItem('masterEnabled', e.target.checked);
-                            masterCheckboxElem.checked = e.target.checked;
+                            checkboxElem.checked = !checkboxElem.checked;
+                        }
+
+                        if (!checkboxElem.checked)
+                        {
+                            localStorage.setItem('masterEnabled', checkboxElem.checked);
+                            masterCheckboxElem.checked = checkboxElem.checked;
                         }
 
                         var enabledTransaction = db.transaction(['folders'], 'readwrite');
@@ -117,11 +122,20 @@
                         var objectStore = enabledTransaction.objectStore("folders");
 
                         var folder = folderItem;
-                        folder.enabled = e.target.checked;
+                        folder.enabled = checkboxElem.checked;
                         objectStore.put(folder);
-                    });
+                    }
+                    checkboxElem.addEventListener('click', toggleFolderEvent);
+
+                    pathElem.addEventListener('click', toggleFolderEvent);
+                    countElem.addEventListener('click', toggleFolderEvent);
 
                     foldersElem.appendChild(clone);
+                }
+    
+                for (const folderItem of folders)
+                {
+                    createFolderElem(folderItem);
                 }
             }
         }

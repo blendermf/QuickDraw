@@ -22,8 +22,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <SignAssembly>false</SignAssembly>
     <StartupObject />
-    <Version>1.0.1</Version>
-    <PackageReleaseNotes>Improved clickability of slideshow buttons by adding labels.</PackageReleaseNotes>
+    <Version>1.0.2</Version>
+    <PackageReleaseNotes>Now you can click anywhere on folder row to toggle it.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,6 +42,10 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="XCOPY &quot;$(ProjectDir)WebSrc&quot; &quot;$(TargetDir)\WebSrc\&quot; /S /Y" />
+  </Target>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="XCOPY &quot;$(ProjectDir)WebSrc&quot; &quot;$(TargetDir)\WebSrc\&quot; /S /Y" />
   </Target>
 
