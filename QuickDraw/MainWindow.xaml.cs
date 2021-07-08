@@ -125,7 +125,7 @@ namespace QuickDraw
             webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.BrowserForward)));
             webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.Right, ModifierKeys.Alt)));
 
-            domain = "https://quickdraw.invalid"
+            domain = "https://quickdraw.invalid";
 #endif
             webView.Source = new Uri($"{domain}/index.html");
 
