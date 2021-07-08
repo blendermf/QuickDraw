@@ -13,12 +13,12 @@ namespace QuickDraw
     /// </summary>
     public partial class App : Application
     {
-        WebClient webClient = new WebClient();
-        InstallingWindow installingWindow = null;
-       
-        string installerFile = null;
+        private readonly WebClient webClient = new();
+        private InstallingWindow installingWindow;
 
-        private bool HasWebView2()
+        private string installerFile;
+
+        private static bool HasWebView2()
         {
             try
             {
@@ -26,14 +26,7 @@ namespace QuickDraw
                 Version requiredVersion = Version.Parse("89.0.774.75");
                 Version version = Version.Parse(versionString.Split(" ")[0]);
 
-                if (version.CompareTo(requiredVersion) >= 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return version.CompareTo(requiredVersion) >= 0;
             }
             catch (WebView2RuntimeNotFoundException)
             {
@@ -43,7 +36,7 @@ namespace QuickDraw
 
         private void DownloadWebView2()
         {
-            webClient.DownloadFileTaskAsync(new Uri(@"https://go.microsoft.com/fwlink/p/?LinkId=2124703"), installerFile);
+            _ = webClient.DownloadFileTaskAsync(new Uri(@"https://go.microsoft.com/fwlink/p/?LinkId=2124703"), installerFile);
         }
 
         private void InstallError()
@@ -64,7 +57,7 @@ namespace QuickDraw
             }
             else
             {
-                this.Shutdown();
+                Shutdown();
             }
         }
 
@@ -80,7 +73,8 @@ namespace QuickDraw
             {
                 MainWindow = new QuickDrawWindow();
                 MainWindow.Show();
-            } else
+            }
+            else
             {
                 installingWindow = new InstallingWindow();
                 installingWindow.Show();
@@ -92,12 +86,12 @@ namespace QuickDraw
         {
             if (!e.Cancelled && e.Error == null)
             {
-                Process process = new Process();
+                Process process = new();
                 process.StartInfo.FileName = installerFile;
                 process.StartInfo.Arguments = @"/silent /install";
                 process.StartInfo.Verb = "runas";
                 process.StartInfo.UseShellExecute = true;
-                process.Start();
+                _ = process.Start();
                 await process.WaitForExitAsync();
 
                 if (HasWebView2())

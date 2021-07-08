@@ -92,6 +92,11 @@
                     var countElem = clone.querySelector("div.folder-image-count");
                     countElem.innerHTML = folderItem.Count;
 
+                    var refreshFolderElem = clone.querySelector("button.refresh-folder");
+                    refreshFolderElem.addEventListener("click", e => {
+                        RefreshFolder(folderItem.Path);
+                    });
+
                     var openFolderElem = clone.querySelector("button.open-folder");
                     openFolderElem.addEventListener("click", e => {
                         OpenFolder(folderItem.Path);
@@ -140,6 +145,15 @@
             }
         }
 
+        function RefreshFolder(path) {
+            window.chrome.webview.postMessage(
+                {
+                    type: "refreshFolder",
+                    path: path
+                }
+            )
+        }
+
         function OpenFolder(path) {
             window.chrome.webview.postMessage(
                 {
@@ -172,6 +186,23 @@
         UpdateFoldersFromDB();
 
         var template = document.querySelector("#folder-row");
+
+        var refreshFoldersElem = document.getElementById("refresh-folders");
+        refreshFoldersElem.addEventListener('click', event => {
+            var folderElems = document.querySelectorAll('#folder-list-container > ul.folder-list > li:not(.empty)');
+            var folders = [];
+
+            folderElems.forEach(folderElem => {
+                folders.push(folderElem.getAttribute('data-folder-path'));
+            });
+
+            window.chrome.webview.postMessage(
+                {
+                    type: "refreshFolders",
+                    paths: folders
+                }
+            )
+        })
     
         var addFoldersElem = document.getElementById("add-folders");
         addFoldersElem.addEventListener('click', event => {
@@ -213,27 +244,35 @@
             var data = event.data;
             
             switch(data.type) {
-                case "AddFolders":
-                    var addTransaction = db.transaction(["folders"], "readwrite");
+                case "UpdateFolders":
+                    var updateTransaction = db.transaction(["folders"], "readwrite");
 
-                    var objectStore = addTransaction.objectStore("folders");
+                    var objectStore = updateTransaction.objectStore("folders");
                     data.data.forEach(folder => {
-                        folder.enabled = false;
                         objectStore.count(folder.Path).onsuccess = e => {
                             if (e.target.result > 0)
                             {
+                                var test = `#folder-list-container > ul.folder-list > li[data-folder-path="${ CSS.escape(folder.Path) }"]`;
+                                var folderElem = document.querySelector(`#folder-list-container > ul.folder-list > li[data-folder-path="${ CSS.escape(folder.Path) }"]`);
+
+                                if (folderElem !== null) {
+                                    var checkboxElem = folderElem.querySelector("input[type='checkbox']");
+                                    folder.enabled = checkboxElem.checked;
+                                }
+
                                 objectStore.put(folder);
                             } else {
+                                folder.enabled = false;
                                 objectStore.add(folder);
                             }
                         };
                     });
 
-                    addTransaction.onerror = e => {
+                    updateTransaction.onerror = e => {
                         console.error("Transaction Error: " + e.target.error);
                     }
 
-                    addTransaction.oncomplete = e => {
+                    updateTransaction.oncomplete = e => {
                         UpdateFoldersFromDB();
                     };
                     break;

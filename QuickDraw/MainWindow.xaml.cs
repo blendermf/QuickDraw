@@ -17,9 +17,14 @@ namespace QuickDraw
         public string type { get; set; }
     }
 
-    public class OpenFolderMessage : Message
+    public class FolderOpMessage : Message
     {
         public string path { get; set; }
+    }
+
+    public class FolderListOpMessage : Message
+    {
+        public List<string> paths { get; set; }
     }
 
     public class GetImagesMessage : Message
@@ -40,7 +45,7 @@ namespace QuickDraw
     /// </summary>
     public partial class QuickDrawWindow : Window, System.Windows.Forms.IWin32Window
     {
-        public static readonly RoutedCommand StopPropagation = new RoutedCommand();
+        public static readonly RoutedCommand StopPropagation = new();
         private void ExecutedStopPropagation(object sender, ExecutedRoutedEventArgs e)
         {
             // Do nothing, disabling this key combo
@@ -52,17 +57,14 @@ namespace QuickDraw
             e.CanExecute = true;
         }
 
-        List<string> folderMappings = new List<string>();
-        public IntPtr Handle
-        {
-            get { return new System.Windows.Interop.WindowInteropHelper(this).Handle; }
-        }
+        private readonly List<string> folderMappings = new();
+        public IntPtr Handle => new System.Windows.Interop.WindowInteropHelper(this).Handle;
 
-        private void WebViewAddFolders(List<ImageFolder> folders)
+        private void WebViewUpdateFolders(List<ImageFolder> folders)
         {
             string jsonString = JsonSerializer.Serialize(new Dictionary<string, object>
             {
-                { "type", "AddFolders" },
+                { "type", "UpdateFolders" },
                 { "data", folders }
             });
 
@@ -78,7 +80,7 @@ namespace QuickDraw
         {
             InitializeComponent();
 
-            this.Closed += OnClosed;
+            Closed += OnClosed;
 
             InitializeAsync();
 
@@ -86,9 +88,9 @@ namespace QuickDraw
 
         private async void InitializeAsync()
         {
-            string userDataFolder = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"QuickDraw");
-            System.IO.Directory.CreateDirectory(userDataFolder);
-            CoreWebView2EnvironmentOptions options = new CoreWebView2EnvironmentOptions();
+            string userDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"QuickDraw");
+            Directory.CreateDirectory(userDataFolder);
+            CoreWebView2EnvironmentOptions options = new();
             CoreWebView2Environment env = CoreWebView2Environment.CreateAsync("", userDataFolder, options).GetAwaiter().GetResult();
 
             await webView.EnsureCoreWebView2Async(env);
@@ -129,23 +131,32 @@ namespace QuickDraw
             webView.CoreWebView2.WebMessageReceived += ReceiveMessage;
         }
 
-        private void OpenFolderInExplorer(string path)
+        private static void OpenFolderInExplorer(string path)
         {
             if (Directory.Exists(path))
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo
+                ProcessStartInfo startInfo = new()
                 {
                     Arguments = path,
                     FileName = "explorer.exe"
                 };
 
-                Process.Start(startInfo);
+                _ = Process.Start(startInfo);
             }
+        }
+        private static IEnumerable<string> GetFolderImages(string filepath)
+        {
+            IEnumerable<string> files = Directory.EnumerateFiles(filepath, "*.*", SearchOption.AllDirectories)
+                                    .Where(s => s.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                                            || s.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                                            || s.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+
+            return files;
         }
 
         private void GetImages(List<string> folders, int interval)
         {
-            HashSet<string> images = new HashSet<string>();
+            HashSet<string> images = new();
             // clear mappings
             foreach (string hostname in folderMappings)
             {
@@ -161,18 +172,14 @@ namespace QuickDraw
 
                 webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
                     hostName, folder,
-                    Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow
+                    CoreWebView2HostResourceAccessKind.Allow
                 );
 
                 folderMappings.Add(hostName);
 
-                var files = Directory.EnumerateFiles(folder, "*.*", SearchOption.AllDirectories)
-                .Where(s => s.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
-                || s.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-                || s.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                .Select(p => p.Replace(folder, $"https://{hostName}"));
+                IEnumerable<string> files = GetFolderImages(folder).Select(p => p.Replace(folder, $"https://{hostName}"));
 
-                images.UnionWith(files.ToHashSet<string>());
+                images.UnionWith(files.ToHashSet());
 
                 folderNum++;
             }
@@ -185,99 +192,128 @@ namespace QuickDraw
                     { "images", images }
                 });
 
-                webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync($@"
+                _ = webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync($@"
                     var slideshowData = {jsonString};
                 ");
 
                 webView.CoreWebView2.Navigate("https://quickdraw.invalid/slideshow.html");
-            } else
+            }
+            else
             {
-                using (DialogCenteringService centeringService = new DialogCenteringService(this))
+                using DialogCenteringService centeringService = new(this);
+                _ = MessageBox.Show(this, "No images found! Select one or more folders.", "QuickDraw", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+        }
+
+        private void RefreshFolderCount(string path)
+        {
+            int count = GetFolderImages(path).Count();
+
+            if (count > 0)
+            {
+                WebViewUpdateFolders(new List<ImageFolder> { new ImageFolder { Path = path, Count = count } });
+            }
+        }
+
+        private void RefreshAllFolderCounts(List<string> paths)
+        {
+            List<ImageFolder> folders = new();
+
+            foreach (string path in paths)
+            {
+                int count = GetFolderImages(path).Count();
+
+                if (count > 0)
                 {
-                    MessageBox.Show(this, "No images found! Select one or more folders.", "QuickDraw", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    folders.Add(new ImageFolder { Path = path, Count = count });
                 }
-            } 
+            }
+
+            WebViewUpdateFolders(folders);
         }
 
         private async void OpenFolders()
         {
-            List <ImageFolder> folders  = await Task<uint>.Run(() =>
-            {
-                List<ImageFolder> folders = new List<ImageFolder>();
+            List<ImageFolder> folders = await Task.Run(() =>
+          {
+              List<ImageFolder> folders = new();
 
-                IFileOpenDialog dialog = null;
-                uint count = 0;
-                try
-                {
-                    dialog = new NativeFileOpenDialog();
-                    dialog.SetOptions(
-                        FileOpenDialogOptions.NoChangeDir
-                        | FileOpenDialogOptions.PickFolders
-                        | FileOpenDialogOptions.AllowMultiSelect
-                        | FileOpenDialogOptions.PathMustExist
-                    );
-                    dialog.Show(IntPtr.Zero);
+              IFileOpenDialog dialog = null;
+              uint count = 0;
+              try
+              {
+                  dialog = new NativeFileOpenDialog();
+                  dialog.SetOptions(
+                      FileOpenDialogOptions.NoChangeDir
+                      | FileOpenDialogOptions.PickFolders
+                      | FileOpenDialogOptions.AllowMultiSelect
+                      | FileOpenDialogOptions.PathMustExist
+                  );
+                  _ = dialog.Show(IntPtr.Zero);
 
-                    IShellItemArray shellItemArray = null;
-                    dialog.GetResults(out shellItemArray);
+                  dialog.GetResults(out IShellItemArray shellItemArray);
 
-                    if (shellItemArray != null)
-                    {
-                        IntPtr i_result;
-                        string filepath = null;
-                        shellItemArray.GetCount(out count);
+                  if (shellItemArray != null)
+                  {
+                      string filepath = null;
+                      shellItemArray.GetCount(out count);
 
-                        for (uint i = 0; i < count; i++)
-                        {
-                            IShellItem shellItem = null;
+                      for (uint i = 0; i < count; i++)
+                      {
+                          shellItemArray.GetItemAt(i, out IShellItem shellItem);
 
-                            shellItemArray.GetItemAt(i, out shellItem);
+                          if (shellItem != null)
+                          {
+                              shellItem.GetDisplayName(SIGDN.FILESYSPATH, out IntPtr i_result);
+                              filepath = Marshal.PtrToStringAuto(i_result);
+                              Marshal.FreeCoTaskMem(i_result);
 
-                            if (shellItem != null)
-                            {
-                                shellItem.GetDisplayName(SIGDN.FILESYSPATH, out i_result);
-                                filepath = Marshal.PtrToStringAuto(i_result);
-                                Marshal.FreeCoTaskMem(i_result);
+                              IEnumerable<string> files = GetFolderImages(filepath);
 
-                                var files = Directory.EnumerateFiles(filepath, "*.*", SearchOption.AllDirectories)
-                                    .Where(s => s.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
-                                            || s.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-                                            || s.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
-
-                                folders.Add(new ImageFolder { Path = filepath, Count = files.Count() });
-                            }
-                        }
-                    }
-                }
-                catch(System.Runtime.InteropServices.COMException)
-                {
-                    // No files or other weird error, do nothing.
-                }
-                finally
-                {
-                    if (dialog != null)
-                        System.Runtime.InteropServices.Marshal.FinalReleaseComObject(dialog);
-                }
-                return folders;
-            });
+                              folders.Add(new ImageFolder { Path = filepath, Count = files.Count() });
+                          }
+                      }
+                  }
+              }
+              catch (COMException)
+              {
+                  // No files or other weird error, do nothing.
+              }
+              finally
+              {
+                  if (dialog != null)
+                  {
+                      _ = Marshal.FinalReleaseComObject(dialog);
+                  }
+              }
+              return folders;
+          });
 
             if (folders.Count > 0)
             {
-                WebViewAddFolders(folders);
+                WebViewUpdateFolders(folders);
             }
         }
 
         private void ReceiveMessage(object sender, CoreWebView2WebMessageReceivedEventArgs args)
         {
             Message message = JsonSerializer.Deserialize<Message>(args.WebMessageAsJson);
-            
-            switch(message.type)
+
+            switch (message.type)
             {
                 case "addFolders":
                     OpenFolders();
                     break;
+                case "refreshFolder":
+                    FolderOpMessage refreshFolderMessage = JsonSerializer.Deserialize<FolderOpMessage>(args.WebMessageAsJson);
+                    RefreshFolderCount(refreshFolderMessage.path);
+                    break;
+                case "refreshFolders":
+                    FolderListOpMessage refreshFoldersMessage = JsonSerializer.Deserialize<FolderListOpMessage>(args.WebMessageAsJson);
+                    RefreshAllFolderCounts(refreshFoldersMessage.paths);
+                    break;
                 case "openFolder":
-                    OpenFolderMessage openFolderMessage = JsonSerializer.Deserialize<OpenFolderMessage>(args.WebMessageAsJson);
+                    FolderOpMessage openFolderMessage = JsonSerializer.Deserialize<FolderOpMessage>(args.WebMessageAsJson);
                     OpenFolderInExplorer(openFolderMessage.path);
                     break;
                 case "getImages":
