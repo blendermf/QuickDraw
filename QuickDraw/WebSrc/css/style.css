@@ -72,7 +72,7 @@ body {
     width: 100vw;
     height: 100vh;
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr auto auto;
     grid-template-rows: auto 1fr auto;
     row-gap: var(--spacing-md);
     column-gap: var(--spacing-md);
@@ -86,7 +86,7 @@ body {
     grid-column-end: 2;
 }
 
-#add-folders {
+#refresh-folders {
     grid-row-start: 1;
     grid-row-end: 2;
     grid-column-start: 3;
@@ -95,13 +95,22 @@ body {
     justify-self: end;
 }
 
+#add-folders {
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 4;
+    grid-column-end: 5;
+    width: fit-content;
+    justify-self: end;
+}
+
 #folder-list-container {
     grid-row-start: 2;
     grid-row-end: 3;
     grid-column-start: 1;
-    grid-column-end: 4;
+    grid-column-end: 5;
     display: grid;
-    grid-template-columns: max-content minmax(min-content, max-content) auto max-content max-content;
+    grid-template-columns: max-content minmax(min-content, max-content) auto max-content max-content max-content;
     row-gap: var(--spacing-sm);
     column-gap: var(--spacing-sm);
     align-items: start;
@@ -132,7 +141,7 @@ body {
 }
 
 #folder-list-container > div.folder-list-header > div.spacing {
-    grid-column: span 2;
+    grid-column: span 3;
     height: 2rem;
 }
 
@@ -143,7 +152,7 @@ body {
 
 #folder-list-container > div.folder-list-header > div:last-child {
     grid-column-start: 1;
-    grid-column-end: 6;
+    grid-column-end: 7;
 } 
 
 #folder-list-container > div.folder-list-header > div:last-child > hr {
@@ -209,7 +218,7 @@ input[type="checkbox"] {
 #footer {
     grid-row-start: 3;
     grid-row-end: 4;
-    grid-column: span 3;
+    grid-column: span 4;
     display: flex;
     gap: var(--spacing-xs);
 }
