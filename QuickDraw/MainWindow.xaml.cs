@@ -9,6 +9,7 @@ using System.Windows;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
+using System.Net;
 
 namespace QuickDraw
 {
@@ -94,14 +95,15 @@ namespace QuickDraw
             CoreWebView2Environment env = CoreWebView2Environment.CreateAsync("", userDataFolder, options).GetAwaiter().GetResult();
 
             await webView.EnsureCoreWebView2Async(env);
-
-#if DEBUG
+#if DEBUG && !FAKE_RELEASE
             domain = "http://localhost:8080";
 #else
             webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
                 "quickdraw.invalid", "WebSrc",
                 Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow
             );
+
+#if !FAKE_RELEASE
             webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
             webView.CoreWebView2.Settings.IsZoomControlEnabled = false;
             webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
@@ -124,6 +126,7 @@ namespace QuickDraw
             webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.Left, ModifierKeys.Alt)));
             webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.BrowserForward)));
             webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.Right, ModifierKeys.Alt)));
+#endif
 
             domain = "https://quickdraw.invalid";
 #endif
@@ -150,7 +153,8 @@ namespace QuickDraw
         {
             Uri imageUri = new(path);
             string folder = folderMappings[imageUri.Host];
-            string imagePath = System.IO.Path.GetFullPath($"{folder}{imageUri.AbsolutePath.Replace("/", "\\")}");
+            string imagePath = Path.GetFullPath($"{folder}{WebUtility.UrlDecode(imageUri.AbsolutePath).Replace("/", "\\")}");
+            Debug.WriteLine(imagePath);
 
             if (File.Exists(imagePath))
             {
@@ -162,8 +166,6 @@ namespace QuickDraw
 
                 _ = Process.Start(startInfo);
             }
-
-           
         }
 
         private static IEnumerable<string> GetFolderImages(string filepath)
