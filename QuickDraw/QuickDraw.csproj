@@ -23,7 +23,7 @@
     <SignAssembly>false</SignAssembly>
     <StartupObject>QuickDraw.App</StartupObject>
     <Version>1.0.3</Version>
-    <PackageReleaseNotes>You can now refresh folder image counts (without readding the folder)
+    <PackageReleaseNotes>You can now refresh folder image counts (without re-adding the folder)
 Clicking an image during a session now shows it in file explorer.</PackageReleaseNotes>
 	<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 	  <PostBuildEventDependsOn>
