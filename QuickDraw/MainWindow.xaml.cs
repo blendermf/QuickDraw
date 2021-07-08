@@ -17,19 +17,18 @@ namespace QuickDraw
         public string type { get; set; }
     }
 
-    public class FolderOpMessage : Message
+    public class PathOpMessage : Message
     {
         public string path { get; set; }
     }
 
-    public class FolderListOpMessage : Message
+    public class PathListOpMessage : Message
     {
         public List<string> paths { get; set; }
     }
 
-    public class GetImagesMessage : Message
+    public class GetImagesMessage : PathListOpMessage
     {
-        public List<string> folders { get; set; }
         public int interval { get; set; }
     }
 
@@ -45,6 +44,7 @@ namespace QuickDraw
     /// </summary>
     public partial class QuickDrawWindow : Window, System.Windows.Forms.IWin32Window
     {
+        private string domain;
         public static readonly RoutedCommand StopPropagation = new();
         private void ExecutedStopPropagation(object sender, ExecutedRoutedEventArgs e)
         {
@@ -57,7 +57,7 @@ namespace QuickDraw
             e.CanExecute = true;
         }
 
-        private readonly List<string> folderMappings = new();
+        private readonly Dictionary<string, string> folderMappings = new();
         public IntPtr Handle => new System.Windows.Interop.WindowInteropHelper(this).Handle;
 
         private void WebViewUpdateFolders(List<ImageFolder> folders)
@@ -96,7 +96,7 @@ namespace QuickDraw
             await webView.EnsureCoreWebView2Async(env);
 
 #if DEBUG
-            webView.Source = new Uri("http://localhost:8080/index.html");
+            domain = "http://localhost:8080";
 #else
             webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
                 "quickdraw.invalid", "WebSrc",
@@ -125,8 +125,9 @@ namespace QuickDraw
             webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.BrowserForward)));
             webView.InputBindings.Add(new InputBinding(QuickDrawWindow.StopPropagation, new KeyGesture(Key.Right, ModifierKeys.Alt)));
 
-            webView.Source = new Uri("https://quickdraw.invalid/index.html");
+            domain = "https://quickdraw.invalid"
 #endif
+            webView.Source = new Uri($"{domain}/index.html");
 
             webView.CoreWebView2.WebMessageReceived += ReceiveMessage;
         }
@@ -144,6 +145,27 @@ namespace QuickDraw
                 _ = Process.Start(startInfo);
             }
         }
+
+        private void OpenImageInExplorer(string path)
+        {
+            Uri imageUri = new(path);
+            string folder = folderMappings[imageUri.Host];
+            string imagePath = System.IO.Path.GetFullPath($"{folder}{imageUri.AbsolutePath.Replace("/", "\\")}");
+
+            if (File.Exists(imagePath))
+            {
+                ProcessStartInfo startInfo = new()
+                {
+                    Arguments = $"/select,\"{imagePath}\"",
+                    FileName = "explorer.exe"
+                };
+
+                _ = Process.Start(startInfo);
+            }
+
+           
+        }
+
         private static IEnumerable<string> GetFolderImages(string filepath)
         {
             IEnumerable<string> files = Directory.EnumerateFiles(filepath, "*.*", SearchOption.AllDirectories)
@@ -158,9 +180,9 @@ namespace QuickDraw
         {
             HashSet<string> images = new();
             // clear mappings
-            foreach (string hostname in folderMappings)
+            foreach (KeyValuePair<string, string> mapping in folderMappings)
             {
-                webView.CoreWebView2.ClearVirtualHostNameToFolderMapping(hostname);
+                webView.CoreWebView2.ClearVirtualHostNameToFolderMapping(mapping.Key);
             }
             folderMappings.Clear();
 
@@ -175,9 +197,9 @@ namespace QuickDraw
                     CoreWebView2HostResourceAccessKind.Allow
                 );
 
-                folderMappings.Add(hostName);
+                folderMappings.Add(hostName, folder);
 
-                IEnumerable<string> files = GetFolderImages(folder).Select(p => p.Replace(folder, $"https://{hostName}"));
+                IEnumerable<string> files = GetFolderImages(folder).Select(p => p.Replace(folder, $"https://{hostName}").Replace("\\", "/"));
 
                 images.UnionWith(files.ToHashSet());
 
@@ -196,7 +218,7 @@ namespace QuickDraw
                     var slideshowData = {jsonString};
                 ");
 
-                webView.CoreWebView2.Navigate("https://quickdraw.invalid/slideshow.html");
+                webView.CoreWebView2.Navigate($"{domain}/slideshow.html");
             }
             else
             {
@@ -305,20 +327,24 @@ namespace QuickDraw
                     OpenFolders();
                     break;
                 case "refreshFolder":
-                    FolderOpMessage refreshFolderMessage = JsonSerializer.Deserialize<FolderOpMessage>(args.WebMessageAsJson);
+                    PathOpMessage refreshFolderMessage = JsonSerializer.Deserialize<PathOpMessage>(args.WebMessageAsJson);
                     RefreshFolderCount(refreshFolderMessage.path);
                     break;
                 case "refreshFolders":
-                    FolderListOpMessage refreshFoldersMessage = JsonSerializer.Deserialize<FolderListOpMessage>(args.WebMessageAsJson);
+                    PathListOpMessage refreshFoldersMessage = JsonSerializer.Deserialize<PathListOpMessage>(args.WebMessageAsJson);
                     RefreshAllFolderCounts(refreshFoldersMessage.paths);
                     break;
                 case "openFolder":
-                    FolderOpMessage openFolderMessage = JsonSerializer.Deserialize<FolderOpMessage>(args.WebMessageAsJson);
+                    PathOpMessage openFolderMessage = JsonSerializer.Deserialize<PathOpMessage>(args.WebMessageAsJson);
                     OpenFolderInExplorer(openFolderMessage.path);
                     break;
                 case "getImages":
                     GetImagesMessage getImagesMessage = JsonSerializer.Deserialize<GetImagesMessage>(args.WebMessageAsJson);
-                    GetImages(getImagesMessage.folders, getImagesMessage.interval);
+                    GetImages(getImagesMessage.paths, getImagesMessage.interval);
+                    break;
+                case "openImage":
+                    PathOpMessage openImageMessage = JsonSerializer.Deserialize<PathOpMessage>(args.WebMessageAsJson);
+                    OpenImageInExplorer(openImageMessage.path);
                     break;
                 default:
                     break;

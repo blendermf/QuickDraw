@@ -8,6 +8,14 @@ export class Slideshow {
     currentPinNum = 0;
     currentTimer = null;
     currentInterval = null;
+    pinClickEvent = e => {
+        window.chrome.webview.postMessage(
+            {
+                type: "openImage",
+                path: this.pins[this.currentPinNum]
+            }
+        );
+    };
     init() {
         const pauseButton = document.getElementById("pause");
         const continueButton = document.getElementById("continue");
@@ -73,6 +81,8 @@ export class Slideshow {
             }
 
             slideshow_image.src = this.pins[0];
+            slideshow_image.removeEventListener('click', this.pinClickEvent);
+            slideshow_image.addEventListener('click', this.pinClickEvent);
             slideshow.classList.add('visible');
             slideshow_image.classList.add("visible");
             document.body.classList.add('noScroll');
@@ -134,6 +144,8 @@ export class Slideshow {
             }
     
             slideshow_image.src = this.pins[this.currentPinNum];
+            slideshow_image.removeEventListener('click', this.pinClickEvent);
+            slideshow_image.addEventListener('click', this.pinClickEvent);
             slideshow_image.classList.toggle("visible");
     
             // setTimeout((()=> {

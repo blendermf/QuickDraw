@@ -234,7 +234,7 @@
             window.chrome.webview.postMessage(
                 {
                     type: "getImages",
-                    folders: folders,
+                    paths: folders,
                     interval: parseInt(localStorage.getItem('timeInterval'))
                 }
             );

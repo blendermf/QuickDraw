@@ -283,6 +283,7 @@ input[type="checkbox"] {
 
 #slideshow.visible > #slideshow-image.visible {
     opacity: 1;
+    cursor: pointer;
     /* transition-property: opacity; */
     /* transition-duration: 1s; */
     /* transition-delay: 1s; */
