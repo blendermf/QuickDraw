@@ -12,6 +12,7 @@ if (Test-Path $zipPath) {
 
 $tmpDir = Join-Path $TargetDir $([io.path]::GetRandomFileName());
 New-Item -ItemType directory -Path $tmpDir -Force;
-Get-ChildItem -Path $TargetDir | % { Copy-Item -Path $_.FullName -Destination $tmpDir -Recurse -Force -Exclude "*.runtimeconfig.dev.json"};
+Get-ChildItem -Path $TargetDir | % { Remove-Item -Path $_.FullName -Recurse -Force -Include "*.zip"};
+Get-ChildItem -Path $TargetDir | % { Copy-Item -Path $_.FullName -Destination $tmpDir -Recurse -Force -Exclude @("*.runtimeconfig.dev.json","*.zip")};
 Compress-Archive -Force -Path $tmpDir/* -DestinationPath $zipPath;
 Remove-Item -Recurse -Force $tmpDir; 
