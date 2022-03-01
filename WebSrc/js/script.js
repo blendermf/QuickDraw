@@ -1,4 +1,20 @@
 (() => {
+    function AddMessageListener(func) {
+        if (window.QuickDrawWindows === true) {
+            window.chrome.webview.addEventListener('message',func);
+        } else if (window.QuickDrawMacOs === true) {
+            window.addEventListener('qd-message',func);
+        }
+    }
+    
+    function PostMessage(message) {
+        if (window.QuickDrawWindows === true) {
+            window.chrome.webview.postMessage(message)
+        } else if (window.QuickDrawMacOs === true) {
+            window.webkit.messageHandlers.bridge.postMessage(message);
+        }
+    }
+    
     var request = window.indexedDB.open("QuickDraw");
 
     request.onerror = e => {
@@ -146,7 +162,7 @@
         }
 
         function RefreshFolder(path) {
-            window.chrome.webview.postMessage(
+            PostMessage(
                 {
                     type: "refreshFolder",
                     path: path
@@ -155,7 +171,7 @@
         }
 
         function OpenFolder(path) {
-            window.chrome.webview.postMessage(
+            PostMessage(
                 {
                     type: "openFolder",
                     path: path
@@ -196,7 +212,7 @@
                 folders.push(folderElem.getAttribute('data-folder-path'));
             });
 
-            window.chrome.webview.postMessage(
+            PostMessage(
                 {
                     type: "refreshFolders",
                     paths: folders
@@ -206,7 +222,7 @@
     
         var addFoldersElem = document.getElementById("add-folders");
         addFoldersElem.addEventListener('click', event => {
-            window.chrome.webview.postMessage(
+            PostMessage(
                 {
                     type: "addFolders"
                 }
@@ -231,7 +247,7 @@
                 // no folders selected, do something
             }
 
-            window.chrome.webview.postMessage(
+            PostMessage(
                 {
                     type: "getImages",
                     paths: folders,
@@ -240,7 +256,7 @@
             );
         });
     
-        window.chrome.webview.addEventListener('message', event => {
+        AddMessageListener( event => {
             var data = event.data;
             
             switch(data.type) {

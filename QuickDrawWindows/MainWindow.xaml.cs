@@ -130,6 +130,10 @@ namespace QuickDraw
 
             domain = "https://quickdraw.invalid";
 #endif
+            _ = webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync($@"
+                    window.QuickDrawWindows = true;
+                ");
+
             webView.Source = new Uri($"{domain}/index.html");
 
             webView.CoreWebView2.WebMessageReceived += ReceiveMessage;

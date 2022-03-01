@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.20348.0</TargetFramework>
 	  <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
@@ -30,6 +30,7 @@ Clicking an image during a session now shows it in file explorer.</PackageReleas
 		  $(PostBuildEventDependsOn);
 		  PostBuildMacros;
 	  </PostBuildEventDependsOn>
+	  <MinimumPlatformVersion>7.0</MinimumPlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -42,9 +43,10 @@ Clicking an image during a session now shows it in file explorer.</PackageReleas
   </ItemGroup>
 
   <ItemGroup>
-	  <Content Include="WebSrc\**" Exclude="WebSrc\**\.vs;WebSrc\**\.vs\**;WebSrc\**\.vscode;WebSrc\**\.vscode\**;">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
+    <Content Include="..\WebSrc\**" Exclude="..\WebSrc\**\.vs;..\WebSrc\**\.vs\**;..\WebSrc\**\.vscode;..\WebSrc\**\.vscode\**;">
+      <Link>WebSrc\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="..\..\..\..\Pictures\QuickDraw.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
