@@ -232,3 +232,5 @@ project.lock.json
 *.xccheckout
 
 WebSrc/language-server-log.txt
+
+._*
