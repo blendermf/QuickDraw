@@ -5,6 +5,7 @@ using Microsoft.Web.WebView2.Core;
 using System.Net;
 using System.IO;
 using System.ComponentModel;
+using System.Net.Http;
 
 namespace QuickDraw
 {
@@ -13,7 +14,7 @@ namespace QuickDraw
     /// </summary>
     public partial class App : Application
     {
-        private readonly WebClient webClient = new();
+        private readonly HttpClient httpClient = new();
         private InstallingWindow installingWindow;
 
         private string installerFile;
@@ -34,9 +35,24 @@ namespace QuickDraw
             }
         }
 
-        private void DownloadWebView2()
+        private async void DownloadWebView2()
         {
-            _ = webClient.DownloadFileTaskAsync(new Uri(@"https://go.microsoft.com/fwlink/p/?LinkId=2124703"), installerFile);
+            using (var response = await httpClient.GetAsync("https://go.microsoft.com/fwlink/p/?LinkId=2124703", HttpCompletionOption.ResponseHeadersRead))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    using (var stream = await response.Content.ReadAsStreamAsync()) 
+                    using (var fileStream = new FileStream(installerFile, FileMode.Create))
+                    {
+                        await stream.CopyToAsync(fileStream);
+                    }
+                    DownloadRuntimeCompleted();
+                } else
+                {
+                    InstallError();
+                }
+
+            }
         }
 
         private void InstallError()
@@ -63,8 +79,6 @@ namespace QuickDraw
 
         protected override /*async*/ void OnStartup(StartupEventArgs e)
         {
-            webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadRuntimeCompleted);
-
             string tempFolder = Path.GetTempPath();
             installerFile = Path.Combine(tempFolder, "MicrosoftEdgeWebview2Setup.exe");
 
@@ -82,28 +96,23 @@ namespace QuickDraw
             }
         }
 
-        private async void DownloadRuntimeCompleted(object sender, AsyncCompletedEventArgs e)
+        private async void DownloadRuntimeCompleted()
         {
-            if (!e.Cancelled && e.Error == null)
+            Process process = new();
+            process.StartInfo.FileName = installerFile;
+            process.StartInfo.Arguments = @"/silent /install";
+            process.StartInfo.Verb = "runas";
+            process.StartInfo.UseShellExecute = true;
+            _ = process.Start();
+            await process.WaitForExitAsync();
+
+            if (HasWebView2())
             {
-                Process process = new();
-                process.StartInfo.FileName = installerFile;
-                process.StartInfo.Arguments = @"/silent /install";
-                process.StartInfo.Verb = "runas";
-                process.StartInfo.UseShellExecute = true;
-                _ = process.Start();
-                await process.WaitForExitAsync();
-
-                if (HasWebView2())
-                {
-                    installingWindow.Hide();
-                    MainWindow = new QuickDrawWindow();
-                    MainWindow.Show();
-                    return;
-                }
+                installingWindow.Hide();
+                MainWindow = new QuickDrawWindow();
+                MainWindow.Show();
+                return;
             }
-
-            InstallError();
         }
     }
 }
