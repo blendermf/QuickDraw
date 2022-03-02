@@ -1,4 +1,12 @@
 (() => {
+    if (window.QuickDrawWindows === true) {
+        document.body.classList.add("QuickDrawWindows");
+    }
+    
+    if (window.QuickDrawMacOs === true) {
+        document.body.classList.add("QuickDrawMacOs");
+    }
+    
     function AddMessageListener(func) {
         if (window.QuickDrawWindows === true) {
             window.chrome.webview.addEventListener('message',func);
@@ -12,6 +20,15 @@
             window.chrome.webview.postMessage(message)
         } else if (window.QuickDrawMacOs === true) {
             window.webkit.messageHandlers.bridge.postMessage(message);
+        }
+    }
+    
+    function ParseMessageEvent(e) {
+        if (window.QuickDrawWindows === true) {
+            return { type: e.data.type, data: e.data.data}
+        }
+        if (window.QuickDrawMacOs === true) {
+            return { type: e.detail.type, data: e.detail.data}
         }
     }
     
@@ -257,14 +274,14 @@
         });
     
         AddMessageListener( event => {
-            var data = event.data;
+            var message = ParseMessageEvent(event);
             
-            switch(data.type) {
+            switch(message.type) {
                 case "UpdateFolders":
                     var updateTransaction = db.transaction(["folders"], "readwrite");
 
                     var objectStore = updateTransaction.objectStore("folders");
-                    data.data.forEach(folder => {
+                    message.data.forEach(folder => {
                         objectStore.count(folder.Path).onsuccess = e => {
                             if (e.target.result > 0)
                             {

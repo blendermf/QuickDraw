@@ -1,3 +1,11 @@
+if (window.QuickDrawWindows === true) {
+    document.body.classList.add("QuickDrawWindows");
+}
+
+if (window.QuickDrawMacOs === true) {
+    document.body.classList.add("QuickDrawMacOs");
+}
+
 class Timer {
     timerID = null;
     startTime = null;
@@ -114,7 +122,13 @@ class Slideshow {
         };
 
         stopButton.onclick = () => {
-            window.location.href="/index.html";
+            if (window.QuickDrawWindows === true) {
+                window.location.href="/index.html";
+            } else if (window.QuickDrawMacOs === true) {
+                window.webkit.messageHandlers.bridge.postMessage({
+                    type: "stopSlideshow"
+                });
+            }
         };
 
         grayscaleButton.onclick = () => {

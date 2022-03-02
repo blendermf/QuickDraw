@@ -12,7 +12,7 @@
 		EFB485D627CCEAAD00C7B1FF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB485D527CCEAAD00C7B1FF /* ContentView.swift */; };
 		EFB485D827CCEAAE00C7B1FF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EFB485D727CCEAAE00C7B1FF /* Assets.xcassets */; };
 		EFB485DB27CCEAAE00C7B1FF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EFB485DA27CCEAAE00C7B1FF /* Preview Assets.xcassets */; };
-		EFB485E527CD07D800C7B1FF /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB485E427CD07D800C7B1FF /* WebView.swift */; };
+		EFB485E527CD07D800C7B1FF /* QuickDrawWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB485E427CD07D800C7B1FF /* QuickDrawWebView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,7 +24,7 @@
 		EFB485DA27CCEAAE00C7B1FF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EFB485DC27CCEAAE00C7B1FF /* QuickDraw.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QuickDraw.entitlements; sourceTree = "<group>"; };
 		EFB485E227CCEE2700C7B1FF /* WebSrc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = WebSrc; path = QuickDrawMac/WebSrc; sourceTree = SOURCE_ROOT; };
-		EFB485E427CD07D800C7B1FF /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		EFB485E427CD07D800C7B1FF /* QuickDrawWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickDrawWebView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +63,7 @@
 				EFB485D727CCEAAE00C7B1FF /* Assets.xcassets */,
 				EFB485DC27CCEAAE00C7B1FF /* QuickDraw.entitlements */,
 				EFB485D927CCEAAE00C7B1FF /* Preview Content */,
-				EFB485E427CD07D800C7B1FF /* WebView.swift */,
+				EFB485E427CD07D800C7B1FF /* QuickDrawWebView.swift */,
 			);
 			path = QuickDrawMac;
 			sourceTree = "<group>";
@@ -148,7 +148,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFB485E527CD07D800C7B1FF /* WebView.swift in Sources */,
+				EFB485E527CD07D800C7B1FF /* QuickDrawWebView.swift in Sources */,
 				EFB485D627CCEAAD00C7B1FF /* ContentView.swift in Sources */,
 				EFB485D427CCEAAD00C7B1FF /* QuickDrawApp.swift in Sources */,
 			);
