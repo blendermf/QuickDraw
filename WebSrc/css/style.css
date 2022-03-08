@@ -173,11 +173,26 @@ body {
 }
 
 span.symbol {
-    font-family: 'Segoe MDL2 Assets';
     vertical-align: bottom;
     margin-bottom: -0.05rem;
     display: inline-block;
 }
+
+.QuickDrawWindows span.symbol::after {
+    font-family: 'Segoe Fluent Icons', 'Segoe MDL2 Assets';
+}
+
+.QuickDrawWindows span.symbol.refresh::after    { content: '\E72C'; }
+.QuickDrawWindows span.symbol.add::after        { content: '\E710'; }
+.QuickDrawWindows span.symbol.folder::after     { content: '\E838'; }
+.QuickDrawWindows span.symbol.delete::after     { content: '\E74D'; }
+.QuickDrawWindows span.symbol.play::after       { content: '\E768'; }
+.QuickDrawWindows span.symbol.pause::after      { content: '\E769'; }
+.QuickDrawWindows span.symbol.grayscale::after  { content: '\F570'; }
+.QuickDrawWindows span.symbol.previous::after   { content: '\E892'; }
+.QuickDrawWindows span.symbol.next::after       { content: '\E893'; }
+.QuickDrawWindows span.symbol.stop::after       { content: '\E71A'; }
+
 
 button:hover {
     border: 2px solid var(--fg-faded-color);

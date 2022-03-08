@@ -13,8 +13,8 @@
 <body>
   <div id="main-grid">
     <div id="select-folders">Select Folder(s)</div>
-    <button id="refresh-folders"><span class="symbol">&#xE72C;</span> Refresh</button>
-    <button id="add-folders"><span class="symbol">&#xE710;</span> Add Folder(s)</button>
+    <button id="refresh-folders"><span class="symbol refresh"></span> Refresh</button>
+    <button id="add-folders"><span class="symbol add"></span> Add Folder(s)</button>
     <div id="folder-list-container">
       <div class="folder-list-header">
         <div class="master-checkbox"><input type="checkbox" name="" id=""></div>
@@ -32,9 +32,9 @@
             <div><input type="checkbox" name="" id=""></div>
             <div class="folder-path"></div>
             <div class="folder-image-count"></div>
-            <div><button class="refresh-folder" aria-label="Refresh Folder"><span class="symbol">&#xE72C;</span></button></div>
-            <div><button class="open-folder" aria-label="Open Folder"><span class="symbol">&#xE838;</span></button></div>
-            <div><button class="remove-folder" aria-label="Remove Folder"><span class="symbol">&#xE74D;</span></button></div>
+            <div><button class="refresh-folder" aria-label="Refresh Folder"><span class="symbol refresh"></span></button></div>
+            <div><button class="open-folder" aria-label="Open Folder"><span class="symbol folder"></span></button></div>
+            <div><button class="remove-folder" aria-label="Remove Folder"><span class="symbol delete"></span></button></div>
           </li>
         </template>
       </ul>
@@ -62,28 +62,7 @@
           <label for="t0">No Limit</label>
       </div>
 
-      <button id="start"><span class="symbol">&#xE768;</span> Start</button>
-    </div>
-  </div>
-
-  <div id="slideshow">
-    <img id="slideshow-image" class="visible">
-    <div id="topbar">
-        <div class="left">
-            <button id="pause" disabled=true>Pause</button>
-            <button id="continue" disabled=true>Continue</button>
-        </div>
-        <div class="center">
-            <div id="slideshow-progress-bar" style="display: none">
-                    <div id="slideshow-progress" style="width:0%"></div>
-            </div>
-        </div>
-        <div class="right">
-            <button id="grayscale">Grayscale</button>
-            <button id="previous">Previous</button>
-            <button id="skip">Skip</button>
-            <button id="stop">Stop</button>
-        </div>
+      <button id="start"><span class="symbol play"></span> Start</button>
     </div>
   </div>
   <script src="js/script.js"></script>
