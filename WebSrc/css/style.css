@@ -184,6 +184,11 @@ span.symbol {
     display: inline-block;
 }
 
+.QuickDrawWindows span.symbol {
+    vertical-align: bottom;
+    margin-bottom: -0.04em;
+}
+
 .QuickDrawWindows span.symbol::after {
     font-family: 'Segoe Fluent Icons', 'Segoe MDL2 Assets';
 }
