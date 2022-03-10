@@ -20,7 +20,7 @@ extension Dictionary {
 
 extension URL {
     func modifyScheme(_ scheme: String) -> URL {
-        var components = URLComponents.init(url: self, resolvingAgainstBaseURL: true)
+        var components = URLComponents.init(url: self, resolvingAgainstBaseURL: false)
         components?.scheme = scheme
         return (components?.url)!
     }
@@ -77,6 +77,8 @@ struct QuickDrawWebView: NSViewRepresentable {
         configuration.setURLSchemeHandler(coordinator, forURLScheme: "qd")
         configuration.preferences.setValue(true, forKey: "developerExtrasEnabled")
         configuration.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
+        CFPreferencesSetValue("cv_note" as CFString, 0 as CFPropertyList, "com.apple.corevideo" as CFString, kCFPreferencesCurrentUser, kCFPreferencesAnyHost)
+        CFPreferencesSynchronize("com.apple.corevideo" as CFString, kCFPreferencesCurrentUser, kCFPreferencesAnyHost)
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = coordinator
         
@@ -91,11 +93,9 @@ struct QuickDrawWebView: NSViewRepresentable {
     
     class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler, WKURLSchemeHandler {
         func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
-            guard let url = urlSchemeTask.request.url,
-                  let path = url.path as Optional,
-                  let fileUrl = URL(fileURLWithPath: path) as Optional,
-                  let mimeType = fileUrl.mimeType,
-                  let data = try? Data(contentsOf: fileUrl) else { return }
+            guard let url = urlSchemeTask.request.url?.modifyScheme("file"),
+                  let mimeType = url.mimeType,
+                  let data = try? Data(contentsOf: url) else { return }
             
             let response = HTTPURLResponse(url: url,
                                            mimeType: mimeType,
@@ -135,7 +135,7 @@ struct QuickDrawWebView: NSViewRepresentable {
                             for url in urls {
                                 group.addTask {
                                     let images = GetFolderImages(url)
-                                    return ["Path": url.path, "Count": images.count, "Bookmark": try! url.bookmarkData().base64EncodedString()]
+                                    return ["Path": url.path, "Count": images.count]
                                 }
                             }
                             
@@ -170,16 +170,12 @@ struct QuickDrawWebView: NSViewRepresentable {
             webView?.evaluateJavaScript("window.dispatchEvent(new CustomEvent('qd-message', {detail: \(json)}));")
         }
         
-
-        
-        func RefreshFolderCount(_ folder: [String : Any]) {
-            let bookmarkData = Data(base64Encoded: folder["Bookmark"] as! String)!
-            var isStale = false
-            let url = try! URL(resolvingBookmarkData: bookmarkData, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
+        func RefreshFolderCount(_ folder: String) {
+            let url = URL(fileURLWithPath: folder)
 
             Task {
                 let images = GetFolderImages(url)
-                let folder = ["Path": url.path, "Count": images.count, "Bookmark": try! url.bookmarkData().base64EncodedString()] as [String : Any]
+                let folder = ["Path": url.path, "Count": images.count] as [String : Any]
                 
                 if (images.count > 0) {
                     await WebViewUpdateFolders([folder])
@@ -187,13 +183,9 @@ struct QuickDrawWebView: NSViewRepresentable {
             }
         }
         
-        func RefreshAllFolderCounts(_ paths: [[String : Any]]) {
+        func RefreshAllFolderCounts(_ paths: [String]) {
             Task {
-                let urls = paths.map{(folder: [String : Any]) -> URL in
-                    let bookmarkData = Data(base64Encoded: folder["bookmark"] as! String)!
-                    var isStale = false
-                    return try! URL(resolvingBookmarkData: bookmarkData, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
-                }
+                let urls = paths.map{URL(fileURLWithPath: $0)}
                 
                 let folders: [[String:Any]] = await withTaskGroup(of: [String:Any].self) { group in
                     var folders: [[String:Any]] = []
@@ -201,7 +193,7 @@ struct QuickDrawWebView: NSViewRepresentable {
                     for url in urls {
                         group.addTask {
                             let images = GetFolderImages(url)
-                            return ["Path": url.path, "Count": images.count, "Bookmark": try! url.bookmarkData().base64EncodedString()]
+                            return ["Path": url.path, "Count": images.count]
                         }
                     }
                     
@@ -218,33 +210,24 @@ struct QuickDrawWebView: NSViewRepresentable {
             }
         }
         
-        func OpenFolderInFinder(_ bookmark: String) {
-            let bookmarkData = Data(base64Encoded: bookmark)!
-            var isStale = false
-            let url = try! URL(resolvingBookmarkData: bookmarkData, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
-            
+        func OpenFolderInFinder(_ folder: String) {
+            let url = URL(fileURLWithPath: folder)
             NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: url.path)
         }
         
-        func GetImages(_ paths: [[String : Any]], interval: Int) {
+        func GetImages(_ paths: [String], interval: Int) {
             Task {
-                let images: [[String : String]] = await withTaskGroup(of: Set<[String : String]>.self) { group in
-                    var images: Set<[String : String]> = []
+                let images: [String] = await withTaskGroup(of: Set<String>.self) { group in
+                    var images: Set<String> = []
                     
-                    let urls = paths.map{(folder: [String : Any]) -> URL in
-                        let bookmarkData = Data(base64Encoded: folder["bookmark"] as! String)!
-                        var isStale = false
-                        return try! URL(resolvingBookmarkData: bookmarkData, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
-                    }
+                    let urls = paths.map{ URL(fileURLWithPath: $0) }
                     for url in urls {
+                        
                         group.addTask {
                             let images = GetFolderImages(url)
-                            let set = Set<[String : String]>(images.map{(url: URL) -> [String : String] in
-                                let path = url.modifyScheme("qd").absoluteString
-                                let bookmark = try! url.bookmarkData().base64EncodedString()
-                                return ["path" : path, "bookmark" : bookmark]
-                            })
-                            return set
+                            let mimeType = images[0].mimeType
+                            let data = try! Data(contentsOf: images[0])
+                            return Set<String>(images.map{ $0.modifyScheme("qd").absoluteString })
                         }
                     }
                     
@@ -252,7 +235,7 @@ struct QuickDrawWebView: NSViewRepresentable {
                         images.formUnion(imageSet)
                     }
                     
-                    return Array<[String : String]>(images)
+                    return [String](images)
                 }
                 
                 if (images.count > 0) {
@@ -278,12 +261,10 @@ struct QuickDrawWebView: NSViewRepresentable {
             }
         }
         
-        func OpenImageInFinder(_ bookmark: String) {
-            let bookmarkData = Data(base64Encoded: bookmark)!
-            var isStale = false
-            let url = try! URL(resolvingBookmarkData: bookmarkData, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
-            
+        func OpenImageInFinder(_ image: String) {
+            let url = URL(fileURLWithPath: image)
             let files = [url]
+            
             NSWorkspace.shared.activateFileViewerSelecting(files)
         }
         
@@ -299,15 +280,15 @@ struct QuickDrawWebView: NSViewRepresentable {
                 case "addFolders":
                     OpenFolders()
                 case "refreshFolder":
-                    RefreshFolderCount(messageBody["path"] as! [String : Any])
+                    RefreshFolderCount(messageBody["path"] as! String)
                 case "refreshFolders":
-                    RefreshAllFolderCounts(messageBody["paths"] as! [[String : Any]])
+                    RefreshAllFolderCounts(messageBody["paths"] as! [String])
                 case "openFolder":
-                    OpenFolderInFinder(messageBody["bookmark"] as! String)
+                    OpenFolderInFinder(messageBody["path"] as! String)
                 case "getImages":
-                    GetImages(messageBody["paths"] as! [[String : Any]], interval: messageBody["interval"] as! Int)
+                    GetImages(messageBody["paths"] as! [String], interval: messageBody["interval"] as! Int)
                 case "openImage":
-                    OpenImageInFinder(messageBody["bookmark"] as! String)
+                    OpenImageInFinder(messageBody["path"] as! String)
                 case "stopSlideshow":
                     StopSlideshow()
                 default:

@@ -22,7 +22,6 @@
 		EFB485D527CCEAAD00C7B1FF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		EFB485D727CCEAAE00C7B1FF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EFB485DA27CCEAAE00C7B1FF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		EFB485DC27CCEAAE00C7B1FF /* QuickDraw.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QuickDraw.entitlements; sourceTree = "<group>"; };
 		EFB485E227CCEE2700C7B1FF /* WebSrc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = WebSrc; path = QuickDrawMac/WebSrc; sourceTree = SOURCE_ROOT; };
 		EFB485E427CD07D800C7B1FF /* QuickDrawWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickDrawWebView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -61,7 +60,6 @@
 				EFB485D327CCEAAD00C7B1FF /* QuickDrawApp.swift */,
 				EFB485D527CCEAAD00C7B1FF /* ContentView.swift */,
 				EFB485D727CCEAAE00C7B1FF /* Assets.xcassets */,
-				EFB485DC27CCEAAE00C7B1FF /* QuickDraw.entitlements */,
 				EFB485D927CCEAAE00C7B1FF /* Preview Content */,
 				EFB485E427CD07D800C7B1FF /* QuickDrawWebView.swift */,
 			);
@@ -278,6 +276,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = QuickDrawMac/QuickDraw.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -305,6 +304,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = QuickDrawMac/QuickDraw.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;

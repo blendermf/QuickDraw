@@ -118,10 +118,6 @@
 
                     var liElem = clone.querySelector('li');
                     liElem.setAttribute("data-folder-path", folderItem.Path);
-
-                    if (window.QuickDrawMacOs) {
-                        liElem.setAttribute("data-folder-bookmark", folderItem.Bookmark);
-                    }
                     
                     var pathElem = clone.querySelector("div.folder-path");
                     pathElem.innerHTML = folderItem.Path;
@@ -183,26 +179,17 @@
         }
 
         function RefreshFolder(folder) {
-            var message =                 {
+            PostMessage({
                 type: "refreshFolder",
                 path: folder.Path
-            }
-            if (window.QuickDrawMacOs) {
-                message["path"] = folder
-            }
-
-            PostMessage(message)
+            });
         }
 
-        function OpenFolder(folder) {
-            var message =                 {
+        function OpenFolder(folder) {          
+            PostMessage({
                 type: "openFolder",
                 path: folder.Path
-            }
-            if (window.QuickDrawMacOs) {
-                message["bookmark"] = folder.Bookmark;
-            }
-            PostMessage(message);
+            });
         }
 
         function RemoveFolder(path) {
@@ -235,31 +222,20 @@
             var folders = [];
 
             folderElems.forEach(folderElem => {
-                if (window.QuickDrawWindows) {
-                    folders.push(folderElem.getAttribute('data-folder-path'));
-                } else if (window.QuickDrawMacOs) {
-                    folders.push({
-                        path: folderElem.getAttribute('data-folder-path'), 
-                        bookmark: folderElem.getAttribute('data-folder-bookmark')
-                    });
-                }
+                folders.push(folderElem.getAttribute('data-folder-path'));
             });
 
-            PostMessage(
-                {
-                    type: "refreshFolders",
-                    paths: folders
-                }
-            )
+            PostMessage({
+                type: "refreshFolders",
+                paths: folders
+            })
         })
     
         var addFoldersElem = document.getElementById("add-folders");
         addFoldersElem.addEventListener('click', event => {
-            PostMessage(
-                {
-                    type: "addFolders"
-                }
-            );
+            PostMessage({
+                type: "addFolders"
+            });
         });
 
         var startElem = document.getElementById("start");
@@ -271,14 +247,7 @@
                 var checkboxElem = folderElem.querySelector("input[type='checkbox']");
                 
                 if (checkboxElem.checked) {
-                    if (window.QuickDrawWindows) {
-                        folders.push(folderElem.getAttribute('data-folder-path'));
-                    } else if (window.QuickDrawMacOs) {
-                        folders.push({
-                            path: folderElem.getAttribute('data-folder-path'), 
-                            bookmark: folderElem.getAttribute('data-folder-bookmark')
-                        });
-                    }
+                    folders.push(folderElem.getAttribute('data-folder-path'));
                 }
             });
 
@@ -287,13 +256,11 @@
                 // no folders selected, do something
             }
 
-            PostMessage(
-                {
-                    type: "getImages",
-                    paths: folders,
-                    interval: parseInt(localStorage.getItem('timeInterval'))
-                }
-            );
+            PostMessage({
+                type: "getImages",
+                paths: folders,
+                interval: parseInt(localStorage.getItem('timeInterval'))
+            });
         });
     
         AddMessageListener( event => {
