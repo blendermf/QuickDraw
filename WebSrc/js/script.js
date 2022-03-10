@@ -117,8 +117,12 @@
                     var clone = template.content.cloneNode(true);
 
                     var liElem = clone.querySelector('li');
-                    liElem.setAttribute("data-folder-path", folderItem.Path)
-    
+                    liElem.setAttribute("data-folder-path", folderItem.Path);
+
+                    if (window.QuickDrawMacOs) {
+                        liElem.setAttribute("data-folder-bookmark", folderItem.Bookmark);
+                    }
+                    
                     var pathElem = clone.querySelector("div.folder-path");
                     pathElem.innerHTML = folderItem.Path;
     
@@ -127,12 +131,12 @@
 
                     var refreshFolderElem = clone.querySelector("button.refresh-folder");
                     refreshFolderElem.addEventListener("click", e => {
-                        RefreshFolder(folderItem.Path);
+                        RefreshFolder(folderItem);
                     });
 
                     var openFolderElem = clone.querySelector("button.open-folder");
                     openFolderElem.addEventListener("click", e => {
-                        OpenFolder(folderItem.Path);
+                        OpenFolder(folderItem);
                     });
 
                     var removeFolderElem = clone.querySelector("button.remove-folder");
@@ -178,22 +182,27 @@
             }
         }
 
-        function RefreshFolder(path) {
-            PostMessage(
-                {
-                    type: "refreshFolder",
-                    path: path
-                }
-            )
+        function RefreshFolder(folder) {
+            var message =                 {
+                type: "refreshFolder",
+                path: folder.Path
+            }
+            if (window.QuickDrawMacOs) {
+                message["path"] = folder
+            }
+
+            PostMessage(message)
         }
 
-        function OpenFolder(path) {
-            PostMessage(
-                {
-                    type: "openFolder",
-                    path: path
-                }
-            );
+        function OpenFolder(folder) {
+            var message =                 {
+                type: "openFolder",
+                path: folder.Path
+            }
+            if (window.QuickDrawMacOs) {
+                message["bookmark"] = folder.Bookmark;
+            }
+            PostMessage(message);
         }
 
         function RemoveFolder(path) {
@@ -226,7 +235,14 @@
             var folders = [];
 
             folderElems.forEach(folderElem => {
-                folders.push(folderElem.getAttribute('data-folder-path'));
+                if (window.QuickDrawWindows) {
+                    folders.push(folderElem.getAttribute('data-folder-path'));
+                } else if (window.QuickDrawMacOs) {
+                    folders.push({
+                        path: folderElem.getAttribute('data-folder-path'), 
+                        bookmark: folderElem.getAttribute('data-folder-bookmark')
+                    });
+                }
             });
 
             PostMessage(
@@ -255,7 +271,14 @@
                 var checkboxElem = folderElem.querySelector("input[type='checkbox']");
                 
                 if (checkboxElem.checked) {
-                    folders.push(folderElem.getAttribute('data-folder-path'));
+                    if (window.QuickDrawWindows) {
+                        folders.push(folderElem.getAttribute('data-folder-path'));
+                    } else if (window.QuickDrawMacOs) {
+                        folders.push({
+                            path: folderElem.getAttribute('data-folder-path'), 
+                            bookmark: folderElem.getAttribute('data-folder-bookmark')
+                        });
+                    }
                 }
             });
 

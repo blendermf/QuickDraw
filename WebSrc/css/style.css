@@ -63,9 +63,16 @@ select {
 body {
     overflow: hidden;
     user-select: none;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--main-bg-color);
     color: var(--main-fg-color);
+}
+
+body.QuickDrawWindows {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body.QuickDrawMacOs {
+    font-family: 'SF Pro', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #main-grid {
@@ -173,8 +180,7 @@ body {
 }
 
 span.symbol {
-    vertical-align: bottom;
-    margin-bottom: -0.05rem;
+    vertical-align: baseline;
     display: inline-block;
 }
 
@@ -188,11 +194,21 @@ span.symbol {
 .QuickDrawWindows span.symbol.delete::after     { content: '\E74D'; }
 .QuickDrawWindows span.symbol.play::after       { content: '\E768'; }
 .QuickDrawWindows span.symbol.pause::after      { content: '\E769'; }
-.QuickDrawWindows span.symbol.grayscale::after  { content: '\F570'; }
+.QuickDrawWindows span.symbol.grayscale::after  { content: '\E790'; }
 .QuickDrawWindows span.symbol.previous::after   { content: '\E892'; }
 .QuickDrawWindows span.symbol.next::after       { content: '\E893'; }
 .QuickDrawWindows span.symbol.stop::after       { content: '\E71A'; }
 
+.QuickDrawMacOs span.symbol.refresh::after      { content: '\100148'; }
+.QuickDrawMacOs span.symbol.add::after          { content: '\10017C'; }
+.QuickDrawMacOs span.symbol.folder::after       { content: '\100215'; }
+.QuickDrawMacOs span.symbol.delete::after       { content: '\100211'; }
+.QuickDrawMacOs span.symbol.play::after         { content: '\100283'; }
+.QuickDrawMacOs span.symbol.pause::after        { content: '\100285'; }
+.QuickDrawMacOs span.symbol.grayscale::after    { content: '\100765'; }
+.QuickDrawMacOs span.symbol.previous::after     { content: '\10028D'; }
+.QuickDrawMacOs span.symbol.next::after         { content: '\10028F'; }
+.QuickDrawMacOs span.symbol.stop::after         { content: '\1006F6'; }
 
 button:hover {
     border: 2px solid var(--fg-faded-color);
@@ -203,6 +219,12 @@ button {
     border: 2px solid var(--bg-faded-color);
     border-radius: 0;
     color: var(--main-fg-color);
+}
+
+body.QuickDrawMacOs button {
+    padding-bottom: 0px;
+    padding-left: 3px;
+    padding-right: 3px;
 }
 
 #main-grid button {
@@ -353,6 +375,7 @@ input[type="checkbox"] {
 #topbar button {
     background-color: rgba(0,0,0,0.5);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     color: #ddd;
     border: 2px solid var;
     padding: var(--spacing-xs);

@@ -11,6 +11,7 @@ import WebKit
 struct ContentView: View {
     var body: some View {
         QuickDrawWebView()
+            .frame(minWidth: 550, idealWidth: 800, maxWidth: nil, minHeight: 320, idealHeight: 450, maxHeight: nil, alignment: .center)
     }
 }
 

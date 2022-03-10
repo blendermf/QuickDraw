@@ -6,6 +6,14 @@ if (window.QuickDrawMacOs === true) {
     document.body.classList.add("QuickDrawMacOs");
 }
 
+function PostMessage(message) {
+    if (window.QuickDrawWindows === true) {
+        window.chrome.webview.postMessage(message)
+    } else if (window.QuickDrawMacOs === true) {
+        window.webkit.messageHandlers.bridge.postMessage(message);
+    }
+}
+
 class Timer {
     timerID = null;
     startTime = null;
@@ -74,12 +82,17 @@ class Slideshow {
     currentTimer = null;
     currentInterval = null;
     pinClickEvent = e => {
-        window.chrome.webview.postMessage(
-            {
-                type: "openImage",
-                path: this.pins[this.currentPinNum]
-            }
-        );
+        var message = {
+            type: "openImage"
+        };
+        if (window.QuickDrawWindows === true) {
+            message["path"] = this.pins[this.currentPinNum];
+        } else {window.QuickDrawMacOs === true} {
+            message["path"] = this.pins[this.currentPinNum].path;
+            message["bookmark"] = this.pins[this.currentPinNum].bookmark;
+        }
+        
+        PostMessage(message);
     };
     init() {
         const pauseButton = document.getElementById("pause");
@@ -125,7 +138,7 @@ class Slideshow {
             if (window.QuickDrawWindows === true) {
                 window.location.href="/index.html";
             } else if (window.QuickDrawMacOs === true) {
-                window.webkit.messageHandlers.bridge.postMessage({
+                PostMessage({
                     type: "stopSlideshow"
                 });
             }
@@ -151,7 +164,11 @@ class Slideshow {
                 this.preloadImage(this.pins[1]);
             }
 
-            slideshow_image.src = this.pins[0];
+            if (window.QuickDrawWindows === true) {
+                slideshow_image.src = this.pins[0];
+            } else if (window.QuickDrawMacOs === true) {
+                slideshow_image.src = this.pins[0].path;
+            }
             slideshow_image.removeEventListener('click', this.pinClickEvent);
             slideshow_image.addEventListener('click', this.pinClickEvent);
             slideshow.classList.add('visible');
@@ -174,8 +191,13 @@ class Slideshow {
         }
     }
     
-    async preloadImage(url) {
-        this.imagePreload.src = url;
+    async preloadImage(image) {
+        if (window.QuickDrawWindows === true) {
+            this.imagePreload.src = image;
+        } else if (window.QuickDrawMacOs === true) {
+            this.imagePreload.src = image.path;
+        }
+
     }
 
     changeImage(back = false) {
@@ -214,7 +236,12 @@ class Slideshow {
                 clearInterval(this.currentInterval);
             }
     
-            slideshow_image.src = this.pins[this.currentPinNum];
+            if (window.QuickDrawWindows === true) {
+                slideshow_image.src = this.pins[this.currentPinNum];
+            } else if (window.QuickDrawMacOs === true) {
+                slideshow_image.src = this.pins[this.currentPinNum].path;
+            }
+            
             slideshow_image.removeEventListener('click', this.pinClickEvent);
             slideshow_image.addEventListener('click', this.pinClickEvent);
             slideshow_image.classList.toggle("visible");
