@@ -205,7 +205,7 @@ namespace QuickDraw
 
                 folderMappings.Add(hostName, folder);
 
-                IEnumerable<string> files = GetFolderImages(folder).Select(p => p.Replace(folder, $"https://{hostName}").Replace("\\", "/"));
+                IEnumerable<string> files = GetFolderImages(folder).Select(p => p.Replace(folder, $"https://{hostName}").Replace("\\", "/").Replace("#", "%23"));
 
                 images.UnionWith(files.ToHashSet());
 
