@@ -1,0 +1,55 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuickDraw">
+
+    <Style TargetType="local:TitleBar" >
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:TitleBar">
+                    <Grid Width="Auto" Height="32" x:Name="LayoutRoot">
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup>
+
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition From="MainLayout" To="SlideLayout" GeneratedDuration="{StaticResource ControlFastAnimationDuration}">
+                                        <VisualTransition.GeneratedEasingFunction>
+                                            <CubicEase EasingMode="EaseIn"/>
+                                        </VisualTransition.GeneratedEasingFunction>
+                                    </VisualTransition>
+                                </VisualStateGroup.Transitions>
+
+                                <VisualState x:Name="MainLayout"/>
+
+                                <VisualState x:Name="SlideLayout">
+                                    <Storyboard>
+                                        <DoubleAnimation EnableDependentAnimation="True" Storyboard.TargetName="LayoutRoot" Storyboard.TargetProperty="Height" To="48"/>
+                                    </Storyboard>
+                                </VisualState>
+
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Grid.Column="0" Source="Assets/TitleBar.png"
+                                HorizontalAlignment="Left" 
+                                Width="16" Height="16" 
+				                VerticalAlignment="Center"
+                                Margin="8,0,0,0"/>
+                        <TextBlock Grid.Column="1" x:Name="AppTitleTextBlock" Text="QuickDraw"
+                                TextWrapping="NoWrap"
+                                VerticalAlignment="Center"
+                                Margin="8,0,0,0"/>
+                        <ContentPresenter Grid.Column="2" Margin="0,0,120,0"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

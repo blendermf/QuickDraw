@@ -10,33 +10,18 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     >
-
+    
     <winex:WindowEx.SystemBackdrop>
         <MicaBackdrop/>
     </winex:WindowEx.SystemBackdrop>
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		<local:TitleBar x:Name="AppTitleBar"/>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="48"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-
-        <StackPanel Grid.Row="0" Orientation="Horizontal" x:Name="AppTitleBar">
-            <Image Source="Assets/TitleBar16x16.png"
-                   HorizontalAlignment="Left" 
-                   Width="16" Height="16" 
-				   VerticalAlignment="Center"
-                   Margin="8,0,0,0"/>
-            <TextBlock x:Name="AppTitleTextBlock" Text="QuickDraw"
-                       TextWrapping="NoWrap"
-                       VerticalAlignment="Center"
-                       Margin="8,0,0,0"/>
-        </StackPanel>
-
-        <Frame x:Name="MainFrame" Grid.Row="1">
-
-
-        </Frame>
-
-    </Grid>
+		<Frame x:Name="MainFrame" Grid.Row="1"/>
+	</Grid>
 </winex:WindowEx>

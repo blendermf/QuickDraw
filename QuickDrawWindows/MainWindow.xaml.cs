@@ -37,6 +37,7 @@ namespace QuickDraw
 
         public void NavigateToSlideshow()
         {
+            VisualStateManager.GoToState(this.AppTitleBar, "SlideLayout", true);
             this.MainFrame.Navigate(typeof(SlidePage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
         }
     }

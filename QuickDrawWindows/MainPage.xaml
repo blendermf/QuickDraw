@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:slider="using:Syncfusion.UI.Xaml.Sliders"
     mc:Ignorable="d"
     >
-
+    
     <Page.Background>
         <SolidColorBrush Color="#00000000"/>
     </Page.Background>
