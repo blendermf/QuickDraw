@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "QuickDraw (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "QuickDraw (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

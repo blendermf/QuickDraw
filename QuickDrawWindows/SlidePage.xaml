@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="QuickDraw.SlidePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuickDraw"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    mc:Ignorable="d">
+
+    <Page.Background>
+        <SolidColorBrush Color="#00000000"/>
+    </Page.Background>
+
+    <Grid>
+        <canvas:CanvasControl x:Name="SlideCanvas" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CreateResources="SlideCanvas_CreateResources" Draw="CanvasControl_Draw" ClearColor="Transparent"/>
+        <StackPanel Orientation="Horizontal">
+            <Button x:Name="BackButton" Content="Back" Click="BackButton_Click"></Button>
+            <Button x:Name="NextButton" Content="Next" Click="NextButton_Click"></Button>
+        </StackPanel>
+    </Grid>
+</Page>

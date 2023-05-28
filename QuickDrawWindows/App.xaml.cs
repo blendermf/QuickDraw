@@ -1,118 +1,64 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
+using Microsoft.UI.Xaml.Shapes;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows;
-using Microsoft.Web.WebView2.Core;
-using System.Net;
 using System.IO;
-using System.ComponentModel;
-using System.Net.Http;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.Activation;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Path = System.IO.Path;
+
+// To learn more about WinUI, the WinUI project structure,
+// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace QuickDraw
 {
     /// <summary>
-    /// Interaction logic for App.xaml
+    /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
     public partial class App : Application
     {
-        private readonly HttpClient httpClient = new();
-        private InstallingWindow installingWindow;
-
-        private string installerFile;
-
-        private static bool HasWebView2()
+        /// <summary>
+        /// Initializes the singleton application object.  This is the first line of authored code
+        /// executed, and as such is the logical equivalent of main() or WinMain().
+        /// </summary>
+        public App()
         {
+#if DEBUG
             try
             {
-                string versionString = CoreWebView2Environment.GetAvailableBrowserVersionString();
-                Version requiredVersion = Version.Parse("89.0.774.75");
-                Version version = Version.Parse(versionString.Split(" ")[0]);
-
-                return version.CompareTo(requiredVersion) >= 0;
+                var syncfusionKey = System.IO.File.ReadAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\..\..\..\..\devlics\syncfusion.devlic"));
+                Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(syncfusionKey);
             }
-            catch (WebView2RuntimeNotFoundException)
-            {
-                return false;
-            }
+            catch { };
+#else
+            // Do whatever I should do with the actual license key
+#endif
+            this.InitializeComponent();
         }
 
-        private async void DownloadWebView2()
+        /// <summary>
+        /// Invoked when the application is launched.
+        /// </summary>
+        /// <param name="args">Details about the launch request and process.</param>
+        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            using (var response = await httpClient.GetAsync("https://go.microsoft.com/fwlink/p/?LinkId=2124703", HttpCompletionOption.ResponseHeadersRead))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    using (var stream = await response.Content.ReadAsStreamAsync()) 
-                    using (var fileStream = new FileStream(installerFile, FileMode.Create))
-                    {
-                        await stream.CopyToAsync(fileStream);
-                    }
-                    DownloadRuntimeCompleted();
-                } else
-                {
-                    InstallError();
-                }
-
-            }
+            m_window = new MainWindow();
+            m_window.Activate();
         }
 
-        private void InstallError()
-        {
-            installingWindow.Hide();
-
-            MessageBoxResult dialogResult = MessageBox.Show("Microsoft Edge WebView2 did not install properly. Click OK to try again or Cancel to quit.",
-                                    "QuickDraw", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
-
-            if (dialogResult == MessageBoxResult.OK)
-            {
-                installingWindow.Show();
-                if (File.Exists(installerFile))
-                {
-                    File.Delete(installerFile);
-                }
-                DownloadWebView2();
-            }
-            else
-            {
-                Shutdown();
-            }
-        }
-
-        protected override /*async*/ void OnStartup(StartupEventArgs e)
-        {
-            string tempFolder = Path.GetTempPath();
-            installerFile = Path.Combine(tempFolder, "MicrosoftEdgeWebview2Setup.exe");
-
-            // Check for WebView2 Runtime, install if needed
-            if (HasWebView2())
-            {
-                MainWindow = new QuickDrawWindow();
-                MainWindow.Show();
-            }
-            else
-            {
-                installingWindow = new InstallingWindow();
-                installingWindow.Show();
-                DownloadWebView2();
-            }
-        }
-
-        private async void DownloadRuntimeCompleted()
-        {
-            Process process = new();
-            process.StartInfo.FileName = installerFile;
-            process.StartInfo.Arguments = @"/silent /install";
-            process.StartInfo.Verb = "runas";
-            process.StartInfo.UseShellExecute = true;
-            _ = process.Start();
-            await process.WaitForExitAsync();
-
-            if (HasWebView2())
-            {
-                installingWindow.Hide();
-                MainWindow = new QuickDrawWindow();
-                MainWindow.Show();
-                return;
-            }
-        }
+        private Window m_window;
+        public MainWindow Window => (MainWindow)m_window;
     }
 }
