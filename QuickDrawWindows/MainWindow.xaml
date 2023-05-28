@@ -20,8 +20,11 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
-		<local:TitleBar x:Name="AppTitleBar"/>
 
+
+		<local:TitleBar x:Name="AppTitleBar" Grid.Row="0">
+		</local:TitleBar>
+		
 		<Frame x:Name="MainFrame" Grid.Row="1"/>
 	</Grid>
 </winex:WindowEx>

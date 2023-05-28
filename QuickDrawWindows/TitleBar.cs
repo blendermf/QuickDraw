@@ -14,8 +14,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace QuickDraw
 {
-    public sealed class TitleBar : Control
+    public sealed class TitleBar :ContentControl
     {
+        public Border TitleBarDragElement;
         public TitleBar()
         {
             this.DefaultStyleKey = typeof(TitleBar);

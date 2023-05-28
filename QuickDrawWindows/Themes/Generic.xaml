@@ -7,7 +7,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:TitleBar">
-                    <Grid Width="Auto" Height="32" x:Name="LayoutRoot">
+                    <Grid Width="Auto" Height="32" x:Name="LayoutRoot" Background="{StaticResource LayerFillColorDefaultBrush}">
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup>
@@ -23,9 +23,7 @@
                                 <VisualState x:Name="MainLayout"/>
 
                                 <VisualState x:Name="SlideLayout">
-                                    <Storyboard>
-                                        <DoubleAnimation EnableDependentAnimation="True" Storyboard.TargetName="LayoutRoot" Storyboard.TargetProperty="Height" To="48"/>
-                                    </Storyboard>
+  
                                 </VisualState>
 
                             </VisualStateGroup>
@@ -36,7 +34,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-
+                        
                         <Image Grid.Column="0" Source="Assets/TitleBar.png"
                                 HorizontalAlignment="Left" 
                                 Width="16" Height="16" 
@@ -47,6 +45,7 @@
                                 VerticalAlignment="Center"
                                 Margin="8,0,0,0"/>
                         <ContentPresenter Grid.Column="2" Margin="0,0,120,0"/>
+                        
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
