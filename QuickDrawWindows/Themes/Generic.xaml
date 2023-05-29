@@ -7,13 +7,13 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:TitleBar">
-                    <Grid Width="Auto" Height="32" x:Name="LayoutRoot" Background="{StaticResource LayerFillColorDefaultBrush}">
+                    <Grid Width="Auto" Height="32" x:Name="LayoutRoot" >
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup>
 
                                 <VisualStateGroup.Transitions>
-                                    <VisualTransition From="MainLayout" To="SlideLayout" GeneratedDuration="{StaticResource ControlFastAnimationDuration}">
+                                    <VisualTransition From="MainLayout" To="SlideLayout" >
                                         <VisualTransition.GeneratedEasingFunction>
                                             <CubicEase EasingMode="EaseIn"/>
                                         </VisualTransition.GeneratedEasingFunction>
@@ -23,7 +23,9 @@
                                 <VisualState x:Name="MainLayout"/>
 
                                 <VisualState x:Name="SlideLayout">
-  
+                                    <Storyboard>
+                                        <DoubleAnimation EnableDependentAnimation="True" Storyboard.TargetName="LayoutRoot" Storyboard.TargetProperty="Height" To="48" Duration="{StaticResource ControlFastAnimationDuration}"/>
+                                    </Storyboard>
                                 </VisualState>
 
                             </VisualStateGroup>
@@ -34,7 +36,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        
+
                         <Image Grid.Column="0" Source="Assets/TitleBar.png"
                                 HorizontalAlignment="Left" 
                                 Width="16" Height="16" 
@@ -45,7 +47,6 @@
                                 VerticalAlignment="Center"
                                 Margin="8,0,0,0"/>
                         <ContentPresenter Grid.Column="2" Margin="0,0,120,0"/>
-                        
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
