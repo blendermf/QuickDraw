@@ -1,3 +1,4 @@
+using CommunityToolkit.WinUI.UI;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -16,6 +17,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.ViewManagement;
 using WinRT.Interop;
 
@@ -46,11 +48,12 @@ namespace QuickDraw
             titlebar.ButtonForegroundColor = ((SolidColorBrush)Application.Current.Resources["WindowCaptionButtonStroke"]).Color;
             titlebar.ButtonHoverForegroundColor = ((SolidColorBrush)Application.Current.Resources["WindowCaptionButtonStrokePointerOver"]).Color;
             titlebar.ButtonPressedForegroundColor = ((SolidColorBrush)Application.Current.Resources["WindowCaptionButtonStrokePressed"]).Color;
-            titlebar.ButtonInactiveForegroundColor = ((SolidColorBrush)Application.Current.Resources["WindowCaptionForegroundDisabled"]).Color;
+            titlebar.ButtonInactiveForegroundColor = Color.FromArgb(0xff, 0x66,0x66, 0x66); //WindowCaptionForegroundDisabled converted to gray with no alpha, for some reason alpha is ignored here
 
             titlebar.PreferredHeightOption = TitleBarHeightOption.Standard;
 
             this.MainFrame.Navigate(typeof(MainPage));
+
         }
 
         public void NavigateToSlideshow()
@@ -71,6 +74,18 @@ namespace QuickDraw
             IntPtr hWnd = WindowNative.GetWindowHandle(this);
             WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
             return AppWindow.GetFromWindowId(wndId);
+        }
+
+        private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+        {
+            if (args.WindowActivationState == WindowActivationState.Deactivated)
+            {
+                VisualStateManager.GoToState(this.AppTitleBar, "Inactive", true);
+            }
+            else
+            {
+                VisualStateManager.GoToState(this.AppTitleBar, "Active", true);
+            }
         }
     }
 }

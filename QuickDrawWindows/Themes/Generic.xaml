@@ -29,6 +29,29 @@
                                 </VisualState>
 
                             </VisualStateGroup>
+
+                            <VisualStateGroup>
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition From="Active" To="Inactive" >
+                                        <VisualTransition.GeneratedEasingFunction>
+                                            <CubicEase EasingMode="EaseIn"/>
+                                        </VisualTransition.GeneratedEasingFunction>
+                                    </VisualTransition>
+                                    <VisualTransition From="Inactive" To="Active" >
+                                        <VisualTransition.GeneratedEasingFunction>
+                                            <CubicEase EasingMode="EaseIn"/>
+                                        </VisualTransition.GeneratedEasingFunction>
+                                    </VisualTransition>
+                                </VisualStateGroup.Transitions>
+
+                                <VisualState x:Name="Active"/>
+
+                                <VisualState x:Name="Inactive">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="AppTitleTextBlockForeground" Storyboard.TargetProperty="Color" To="{Binding Color, Source={StaticResource WindowCaptionForegroundDisabled}}" Duration="{StaticResource ControlFasterAnimationDuration}"/>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
                         <Grid.ColumnDefinitions>
@@ -45,7 +68,12 @@
                         <TextBlock Grid.Column="1" x:Name="AppTitleTextBlock" Text="QuickDraw"
                                 TextWrapping="NoWrap"
                                 VerticalAlignment="Center"
-                                Margin="8,0,0,0"/>
+                                Margin="8,0,0,0">
+
+                            <TextBlock.Foreground>
+                                <SolidColorBrush x:Name="AppTitleTextBlockForeground" Color="{Binding Color, Source={StaticResource WindowCaptionForeground}}"></SolidColorBrush>
+                            </TextBlock.Foreground>
+                        </TextBlock>
                         <ContentPresenter Grid.Column="2" Margin="0,0,120,0"/>
                     </Grid>
                 </ControlTemplate>
