@@ -30,7 +30,7 @@ namespace QuickDraw
     /// <remarks>Internal use only.</remarks>
     internal class StringToEnumConverter : IValueConverter
     {
-        private Type _enum;
+        private readonly Type _enum;
 
         public StringToEnumConverter(Type type)
         {
@@ -79,7 +79,7 @@ namespace QuickDraw
         /// <remarks>Internal use only.</remarks>
         internal class DoubleToEnumConverter : IValueConverter
     {
-        private Type _enum;
+        private readonly Type _enum;
 
         public DoubleToEnumConverter(Type type)
         {
@@ -150,7 +150,7 @@ namespace QuickDraw
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             double val = (double)value;
-            GridLength gridLength = new GridLength(val);
+            GridLength gridLength = new(val);
 
             return gridLength;
         }
@@ -204,10 +204,10 @@ namespace QuickDraw
             }
         }
 
-        private SortedSet<TextBlock> _pathTexts = new SortedSet<TextBlock>(new ByWidth());
-        private SortedSet<TextBlock> _imageCountTexts = new SortedSet<TextBlock>(new ByWidth());
-        private HashSet<ColumnDefinition> _pathColumns = new HashSet<ColumnDefinition>();
-        private HashSet<ColumnDefinition> _imageCountColumns = new HashSet<ColumnDefinition>();
+        private readonly SortedSet<TextBlock> _pathTexts = new(new ByWidth());
+        private readonly SortedSet<TextBlock> _imageCountTexts = new(new ByWidth());
+        private readonly HashSet<ColumnDefinition> _pathColumns = new();
+        private readonly HashSet<ColumnDefinition> _imageCountColumns = new();
 
         public double PathColumnWidth { get; set; } = 1000;
         public double ImageCountColumnWidth { get; set; } = 1000;
@@ -220,10 +220,9 @@ namespace QuickDraw
             this.Resources.Add("stringToEnumConverter", new StringToEnumConverter(typeof(TimerEnum)));
         }
 
-        private void UpdateColumnWidths(TextBlock pathText, TextBlock imageCountText, bool debug = false)
+        private void UpdateColumnWidths(Grid grid)
         {
             if (_pathTexts.Count < 1 || _imageCountTexts.Count < 1) { return; }
-            var grid = (Grid)pathText.Parent;
 
             ImageCountColumnWidth = _imageCountTexts.Max.ActualWidth + 20;
 
@@ -232,8 +231,6 @@ namespace QuickDraw
 
             var maxPathColumnWidth = _pathTexts.Max != null ? _pathTexts.Max.PreWrappedWidth() : 0;
             PathColumnWidth = Math.Max(100, Math.Min(availableWidth,maxPathColumnWidth));
-
-            Debug.WriteLine(_pathTexts.Max.ActualWidth);
 
             foreach (ColumnDefinition pathColumn in _pathColumns)
             {
@@ -252,14 +249,12 @@ namespace QuickDraw
             var pathText = (TextBlock)sender;
             var grid = (Grid)pathText.Parent;
 
-            var imageCountText = (TextBlock)grid.FindChild("ImageCountText");
-
             _pathTexts.Remove(pathText);
             _pathTexts.Add(pathText);
 
             _pathColumns.Add(grid.ColumnDefinitions[0]);
 
-            UpdateColumnWidths(pathText, imageCountText, true);
+            UpdateColumnWidths(grid);
         }
 
         private void ImageCountText_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -267,14 +262,12 @@ namespace QuickDraw
             var imageCountText = (TextBlock)sender;
             var grid = (Grid)imageCountText.Parent;
 
-            var pathText = (TextBlock)grid.FindChild("PathText");
-
             _imageCountTexts.Remove(imageCountText);
             _imageCountTexts.Add(imageCountText);
 
             _imageCountColumns.Add(grid.ColumnDefinitions[1]);
 
-            UpdateColumnWidths(pathText, imageCountText);
+            UpdateColumnWidths(grid);
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
@@ -286,10 +279,7 @@ namespace QuickDraw
         {
             Grid grid = (Grid)sender;
 
-            var pathText = (TextBlock)grid.FindChild("PathText");
-            var imageCountText = (TextBlock)grid.FindChild("ImageCountText");
-
-            UpdateColumnWidths(pathText, imageCountText);
+            UpdateColumnWidths(grid);
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)

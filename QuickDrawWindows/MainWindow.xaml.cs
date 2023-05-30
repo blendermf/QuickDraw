@@ -31,12 +31,9 @@ namespace QuickDraw
     /// </summary>
     public sealed partial class MainWindow : WinUIEx.WindowEx
     {
-        private AppWindow m_AppWindow;
         public MainWindow()
         {
             this.InitializeComponent();
-
-            m_AppWindow = GetAppWindowForCurrentWindow();
 
             var titlebar = this.AppWindow.TitleBar;
             titlebar.ExtendsContentIntoTitleBar = true;
@@ -67,13 +64,6 @@ namespace QuickDraw
 
             VisualStateManager.GoToState(this.AppTitleBar, "SlideLayout", true);
             this.MainFrame.Navigate(typeof(SlidePage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
-        }
-
-        private AppWindow GetAppWindowForCurrentWindow()
-        {
-            IntPtr hWnd = WindowNative.GetWindowHandle(this);
-            WindowId wndId = Win32Interop.GetWindowIdFromWindow(hWnd);
-            return AppWindow.GetFromWindowId(wndId);
         }
 
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
