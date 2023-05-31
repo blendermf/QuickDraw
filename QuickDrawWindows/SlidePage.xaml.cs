@@ -95,6 +95,14 @@ namespace QuickDraw
         public SlidePage()
         {
             this.InitializeComponent();
+
+            this.Unloaded += SlidePage_Unloaded;
+        }
+
+        void SlidePage_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.SlideCanvas.RemoveFromVisualTree();
+            this.SlideCanvas = null;
         }
 
         private void CanvasControl_Draw(CanvasControl sender, CanvasDrawEventArgs args)
@@ -103,7 +111,6 @@ namespace QuickDraw
 
             if (currentImageNode == null)
             {
-                Debug.WriteLine("Nothing to Show");
             }
             else
             {

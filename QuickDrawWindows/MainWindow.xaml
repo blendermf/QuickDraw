@@ -9,23 +9,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Activated="MainWindow_Activated"
     >
     
     <winex:WindowEx.SystemBackdrop>
         <MicaBackdrop/>
     </winex:WindowEx.SystemBackdrop>
 	
-	<Grid x:Name="RootLayout">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
-
-
-		<local:TitleBar x:Name="AppTitleBar" Grid.Row="0">
-		</local:TitleBar>
-		
-		<Frame x:Name="MainFrame" Grid.Row="1"/>
-	</Grid>
+	<Frame x:Name="MainFrame"/>
 </winex:WindowEx>

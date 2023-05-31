@@ -14,10 +14,11 @@
     </Page.Background>
 
     <Grid>
-        <canvas:CanvasControl x:Name="SlideCanvas" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CreateResources="SlideCanvas_CreateResources" Draw="CanvasControl_Draw" ClearColor="Transparent"/>
-        <StackPanel Orientation="Horizontal">
-            <Button x:Name="BackButton" Content="Back" Click="BackButton_Click"></Button>
-            <Button x:Name="NextButton" Content="Next" Click="NextButton_Click"></Button>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <local:SlideTitleBar x:Name="AppTitleBar" Grid.Row="0"/>
+        <canvas:CanvasControl x:Name="SlideCanvas" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CreateResources="SlideCanvas_CreateResources" Draw="CanvasControl_Draw" ClearColor="Transparent"/>
     </Grid>
 </Page>

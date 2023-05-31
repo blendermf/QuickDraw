@@ -28,101 +28,118 @@
         </DataTemplate>
     </Page.Resources>
 
-    <Grid Padding="24,0,24,24" x:Name="MainGrid">
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <CommandBar x:Name="commandBar"  DefaultLabelPosition="Right" VerticalContentAlignment="Center" Grid.Row="0">
-            <AppBarButton Icon="Refresh" Label="Refresh" Click="AppBarButton_Click">
-                <AppBarButton.KeyboardAccelerators>
-                    <KeyboardAccelerator Modifiers="Control" Key="R"/>
-                    <KeyboardAccelerator Key="F5"/>
-                </AppBarButton.KeyboardAccelerators>
-            </AppBarButton>
-            <AppBarButton Icon="Add" Label="Add Folder(s)">
-                <AppBarButton.KeyboardAccelerators>
-                    <KeyboardAccelerator Modifiers="Control" Key="O"/>
-                </AppBarButton.KeyboardAccelerators>
-            </AppBarButton>
-            <CommandBar.Content>
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox Margin="10,0,0,0" MinWidth="0" VerticalAlignment="Center"/>
-                    <TextBlock Text="Select Folder(s)" VerticalAlignment="Center"/>
-                </StackPanel>
+        
+        <local:MainTitleBar x:Name="AppTitleBar" Grid.Row="0"/>
 
-            </CommandBar.Content>
-        </CommandBar>
+        <Grid Padding="24,8,24,24" x:Name="MainGrid" Grid.Row="1" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <ListView  SelectionMode="Multiple" Grid.Row="1" ItemsSource="{x:Bind ImageFolders}">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:ImageFolder">
-                    <Grid SizeChanged="Grid_SizeChanged">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="PathText" TextWrapping="Wrap" VerticalAlignment="Center" Text="{x:Bind Path}" Margin="0,0,0,0" Grid.Column="0" SizeChanged="PathText_SizeChanged"/>
-                        <TextBlock x:Name="ImageCountText" VerticalAlignment="Center" Text="{x:Bind ImageCount}"  Margin="20,0,0,0" Grid.Column="1" SizeChanged="ImageCountText_SizeChanged"/>
-                        <StackPanel Grid.Column="3" Orientation="Horizontal">
-                            <Button Padding="5,5,5,6" Margin="10,0,0,0">
-                                <SymbolIcon Symbol="Refresh"/>
-                            </Button>
-                            <Button Padding="5,5,5,6" Margin="10,0,0,0">
-                                <FontIcon Glyph="&#xE838;" />
-                            </Button>
-                            <Button Padding="5,5,5,6" Margin="10,0,0,0">
-                                <SymbolIcon Symbol="Delete"/>
-                            </Button>
+                <CommandBar  x:Name="commandBar"  DefaultLabelPosition="Right" VerticalContentAlignment="Center" Grid.Row="0">
+                    <AppBarButton Icon="Refresh" Label="Refresh" Click="AppBarButton_Click">
+                        <AppBarButton.KeyboardAccelerators>
+                            <KeyboardAccelerator Modifiers="Control" Key="R"/>
+                            <KeyboardAccelerator Key="F5"/>
+                        </AppBarButton.KeyboardAccelerators>
+                    </AppBarButton>
+                    <AppBarButton Icon="Add" Label="Add Folder(s)">
+                        <AppBarButton.KeyboardAccelerators>
+                            <KeyboardAccelerator Modifiers="Control" Key="O"/>
+                        </AppBarButton.KeyboardAccelerators>
+                    </AppBarButton>
+                    <CommandBar.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Margin="10,0,0,0" MinWidth="0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Select Folder(s)" VerticalAlignment="Center"/>
                         </StackPanel>
 
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-            
-        </ListView>
+                    </CommandBar.Content>
+                </CommandBar>
 
-        <Grid Grid.Row="2" Margin="0,20,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <slider:SfSlider Value="2"
-                 ShowDividers="True"
-                 DividerHeight="10"
-                 DividerWidth="10"
-                 ToolTipFormat="N0"
-                 DividerStrokeThickness="2"
-                ShowLabels="True"
-                 Minimum="0"
-                 Maximum="4"
-                 LabelOffset="14"
-                 Interval="1"
-                 StepFrequency="1"
-                 LabelTemplate="{StaticResource TrackLabelTemplate}"
-                 ToolTipTemplate="{StaticResource ToolTipTemplate}"
-                             >
+            <ListView Background="{StaticResource CardBackgroundFillColorDefaultBrush}" CornerRadius="6" SelectionMode="Multiple" Grid.Row="1" ItemsSource="{x:Bind ImageFolders}" >
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:ImageFolder">
+                        <Grid SizeChanged="Grid_SizeChanged">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="PathText" TextWrapping="Wrap" VerticalAlignment="Center" Text="{x:Bind Path}" Margin="0,0,0,0" Grid.Column="0" SizeChanged="PathText_SizeChanged"/>
+                            <TextBlock x:Name="ImageCountText" VerticalAlignment="Center" Text="{x:Bind ImageCount}"  Margin="20,0,0,0" Grid.Column="1" SizeChanged="ImageCountText_SizeChanged"/>
+                            <StackPanel Grid.Column="3" Orientation="Horizontal">
+                                <Button Padding="5,5,5,6" Margin="10,0,0,0">
+                                    <Viewbox Width="16" Height="16">
+                                        <SymbolIcon Symbol="Refresh"/>
+                                    </Viewbox>
+                                </Button>
+                                <Button Padding="5,5,5,6" Margin="10,0,0,0">
+                                    <Viewbox Width="16" Height="16">
+                                        <FontIcon Glyph="&#xE838;" />
+                                    </Viewbox>
+                                </Button>
+                                <Button Padding="5,5,5,6" Margin="10,0,0,0">
+                                    <Viewbox Width="16" Height="16">
+                                        <SymbolIcon Symbol="Delete"/>
+                                    </Viewbox>
+                                </Button>
+                            </StackPanel>
+
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+
+            </ListView>
+
+
+            <Grid Grid.Row="2" Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <slider:SfSlider Value="2"
+                     ShowDividers="True"
+                     DividerHeight="10"
+                     DividerWidth="10"
+                     ToolTipFormat="N0"
+                     DividerStrokeThickness="2"
+                    ShowLabels="True"
+                     Minimum="0"
+                     Maximum="4"
+                     LabelOffset="14"
+                     Interval="1"
+                     StepFrequency="1"
+                     LabelTemplate="{StaticResource TrackLabelTemplate}"
+                     ToolTipTemplate="{StaticResource ToolTipTemplate}"
+                                 >
                 
     
-            </slider:SfSlider>
-            <!--<RadioButtons Header="Time Per Image" MaxColumns="5" VerticalContentAlignment="Center" Grid.Column="0" VerticalAlignment="Center">
-                <RadioButton Content="30s" MinWidth="0" MinHeight="0"/>
-                <RadioButton Content="1m" MinWidth="0" MinHeight="0"/>
-                <RadioButton Content="2m" MinWidth="0" MinHeight="0"/>
-                <RadioButton Content="5m" MinWidth="0" MinHeight="0"/>
-                <RadioButton Content="No Limit" MinWidth="0" MinHeight="0"/>
-            </RadioButtons>-->
-            <Button x:Name="StartButton" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Top" Click="StartButton_Click">
+                </slider:SfSlider>
+                <!--<RadioButtons Header="Time Per Image" MaxColumns="5" VerticalContentAlignment="Center" Grid.Column="0" VerticalAlignment="Center">
+                    <RadioButton Content="30s" MinWidth="0" MinHeight="0"/>
+                    <RadioButton Content="1m" MinWidth="0" MinHeight="0"/>
+                    <RadioButton Content="2m" MinWidth="0" MinHeight="0"/>
+                    <RadioButton Content="5m" MinWidth="0" MinHeight="0"/>
+                    <RadioButton Content="No Limit" MinWidth="0" MinHeight="0"/>
+                </RadioButtons>-->
+                <Button x:Name="StartButton" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Top" Click="StartButton_Click">
 
-                <StackPanel Orientation="Horizontal" >
-                    <SymbolIcon Symbol="Play" Margin="0,0,11,0"/>
-                    <TextBlock Text="Start"/>
-                </StackPanel>
+                    <StackPanel Orientation="Horizontal" >
+                        <SymbolIcon Symbol="Play" Margin="0,0,11,0"/>
+                        <TextBlock Text="Start"/>
+                    </StackPanel>
 
-            </Button>
+                </Button>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

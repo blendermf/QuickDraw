@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -19,7 +20,9 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
 using Windows.UI.ViewManagement;
+using Windows.UI.WindowManagement;
 using WinRT.Interop;
+
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -47,35 +50,22 @@ namespace QuickDraw
             titlebar.ButtonPressedForegroundColor = ((SolidColorBrush)Application.Current.Resources["WindowCaptionButtonStrokePressed"]).Color;
             titlebar.ButtonInactiveForegroundColor = Color.FromArgb(0xff, 0x66,0x66, 0x66); //WindowCaptionForegroundDisabled converted to gray with no alpha, for some reason alpha is ignored here
 
-            titlebar.PreferredHeightOption = TitleBarHeightOption.Standard;
-
             this.MainFrame.Navigate(typeof(MainPage));
 
         }
 
+
+
         public void NavigateToSlideshow()
         {
-            var titlebar = this.AppWindow.TitleBar;
-            var delay = TimeSpan.Parse((string)Application.Current.Resources["ControlFastAnimationDuration"]);
-            Task.Run(async delegate { 
-                await Task.Delay(delay);
-                titlebar.PreferredHeightOption = TitleBarHeightOption.Tall;
-            });
-
-            VisualStateManager.GoToState(this.AppTitleBar, "SlideLayout", true);
-            this.MainFrame.Navigate(typeof(SlidePage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
+            MainFrame.Navigate(typeof(SlidePage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 
-        private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+        public void NavigateToMain()
         {
-            if (args.WindowActivationState == WindowActivationState.Deactivated)
-            {
-                VisualStateManager.GoToState(this.AppTitleBar, "Inactive", true);
-            }
-            else
-            {
-                VisualStateManager.GoToState(this.AppTitleBar, "Active", true);
-            }
+            MainFrame.Navigate(typeof(MainPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
+
+
     }
 }
