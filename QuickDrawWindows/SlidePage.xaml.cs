@@ -316,14 +316,14 @@ namespace QuickDraw
             SlideCanvas.Invalidate();
         }
 
-        private async void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            await Move(LoadDirection.Backwards);
-        }
-
-        private async void NextButton_Click(object sender, RoutedEventArgs e)
+        private async void AppTitleBar_NextButtonClick(object sender, RoutedEventArgs e)
         {
             await Move(LoadDirection.Forwards);
+        }
+
+        private async void AppTitleBar_PreviousButtonClick(object sender, RoutedEventArgs e)
+        {
+            await Move(LoadDirection.Backwards);
         }
     }
 }

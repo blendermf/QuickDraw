@@ -30,9 +30,22 @@ namespace QuickDraw
         double m_leftInset = 0;
         double m_rightInset = 0;
 
+        public event RoutedEventHandler NextButtonClick;
+        public event RoutedEventHandler PreviousButtonClick;
+
         public SlideTitleBar()
         {
             this.DefaultStyleKey = typeof(SlideTitleBar);
+        }
+
+        void NextButton_Click(object sender, RoutedEventArgs e)
+        {
+            NextButtonClick?.Invoke(sender, e);
+        }
+
+        void PreviousButton_Click(object sender, RoutedEventArgs e)
+        {
+            PreviousButtonClick?.Invoke(sender, e);
         }
 
         protected override void OnApplyTemplate()
@@ -44,6 +57,9 @@ namespace QuickDraw
             this.Unloaded += SlideTitleBar_Unloaded;
 
             this.SizeChanged += TitleBar_SizeChanged;
+
+            (GetTemplateChild("NextButton") as Button).Click += NextButton_Click;
+            (GetTemplateChild("PreviousButton") as Button).Click += PreviousButton_Click;
 
             (GetTemplateChild("BackButton") as Button).Click += SlideTitleBar_BackClick;
 

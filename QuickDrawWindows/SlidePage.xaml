@@ -18,7 +18,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <local:SlideTitleBar x:Name="AppTitleBar" Grid.Row="0"/>
+        <local:SlideTitleBar x:Name="AppTitleBar" Grid.Row="0" NextButtonClick="AppTitleBar_NextButtonClick" PreviousButtonClick="AppTitleBar_PreviousButtonClick"/>
         <canvas:CanvasControl x:Name="SlideCanvas" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" CreateResources="SlideCanvas_CreateResources" Draw="CanvasControl_Draw" ClearColor="Transparent"/>
     </Grid>
 </Page>
