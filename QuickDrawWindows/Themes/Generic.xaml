@@ -25,6 +25,7 @@
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <StackPanel.Resources>
                                     <StaticResource x:Key="ButtonBackground" ResourceKey="ControlFillColorTransparentBrush" />
+                                    <StaticResource x:Key="ButtonBorderBrush" ResourceKey="ControlFillColorTransparentBrush" />
                                 </StackPanel.Resources>
                                 <Button BorderThickness="0" Padding="12,12,12,12" Margin="0">
                                     <Viewbox Width="16" Height="16">
@@ -32,17 +33,17 @@
                                     </Viewbox>
 
                                 </Button>
-                                <Button x:Name="PreviousButton" BorderThickness="0" Padding="12,12,12,12"  Margin="10,0,0,0">
+                                <Button x:Name="PreviousButton" Padding="12,12,12,12"  Margin="10,0,0,0">
                                     <Viewbox Width="16" Height="16">
                                         <SymbolIcon   Symbol="Previous"/>
                                     </Viewbox>
                                 </Button>
-                                <Button x:Name="NextButton" BorderThickness="0" Padding="12,12,12,12"  Margin="10,0,0,0">
+                                <Button x:Name="NextButton" Padding="12,12,12,12"  Margin="10,0,0,0">
                                     <Viewbox Width="16" Height="16">
                                         <SymbolIcon   Symbol="Next"/>
                                     </Viewbox>
                                 </Button>
-                                <Button BorderThickness="0" Padding="12,12,12,12"  Margin="10,0,0,0">
+                                <Button Padding="12,12,12,12"  Margin="10,0,0,0">
                                     <Viewbox Width="16" Height="16">
                                         <SymbolIcon   Symbol="Pause"/>
                                     </Viewbox>

@@ -64,10 +64,14 @@
                     </CommandBar.Content>
                 </CommandBar>
 
-            <ListView Background="{StaticResource CardBackgroundFillColorDefaultBrush}" CornerRadius="6" SelectionMode="Multiple" Grid.Row="1" ItemsSource="{x:Bind ImageFolders}" >
+            <ListView Background="{StaticResource CardBackgroundFillColorDefaultBrush}" CornerRadius="6" SelectionMode="Multiple" Grid.Row="1" ItemsSource="{x:Bind ImageFolders}" BorderThickness="1" BorderBrush="{StaticResource CardStrokeColorDefaultBrush}" >
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="local:ImageFolder">
                         <Grid SizeChanged="Grid_SizeChanged">
+                            <Grid.Resources>
+                                <StaticResource x:Key="ButtonBackground" ResourceKey="ControlFillColorTransparentBrush" />
+                                <StaticResource x:Key="ButtonBorderBrush" ResourceKey="ControlFillColorTransparentBrush" />
+                            </Grid.Resources>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
