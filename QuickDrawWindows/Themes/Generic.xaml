@@ -27,7 +27,7 @@
                                     <StaticResource x:Key="ButtonBackground" ResourceKey="ControlFillColorTransparentBrush" />
                                     <StaticResource x:Key="ButtonBorderBrush" ResourceKey="ControlFillColorTransparentBrush" />
                                 </StackPanel.Resources>
-                                <Button BorderThickness="0" Padding="12,12,12,12" Margin="0">
+                                <Button x:Name="GrayscaleButton" BorderThickness="0" Padding="12,12,12,12" Margin="0">
                                     <Viewbox Width="16" Height="16">
                                         <FontIcon  Glyph="&#xE790;" />
                                     </Viewbox>

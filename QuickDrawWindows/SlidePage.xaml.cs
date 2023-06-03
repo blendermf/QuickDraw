@@ -1,5 +1,6 @@
 using CommunityToolkit.Common;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI;
@@ -90,6 +91,8 @@ namespace QuickDraw
         private int imageCachePosition = 0;
         private Task imageLoadTask;
 
+        private bool grayscale = false;
+
         private readonly object cachedImagesLock = new();
 
         public SlidePage()
@@ -141,7 +144,26 @@ namespace QuickDraw
                     imagePos = new Point((canvasSize.Width - imageRenderSize.Width) / 2, 0);
 
                 }
-                args.DrawingSession.DrawImage(bitmap, new Rect(imagePos, imageRenderSize), bitmap.Bounds);
+
+                CanvasCommandList cl = new(sender);
+
+                using (CanvasDrawingSession clds = cl.CreateDrawingSession())
+                {
+                    clds.DrawImage(bitmap, new Rect(imagePos, imageRenderSize), bitmap.Bounds);
+                }
+
+                if (grayscale)
+                {
+                    GrayscaleEffect grayscale = new()
+                    {
+                        Source = bitmap
+                    };
+                    args.DrawingSession.DrawImage(grayscale, new Rect(imagePos, imageRenderSize), bitmap.Bounds);
+                } else
+                {
+                    args.DrawingSession.DrawImage(cl);
+                }
+
             }
         }
 
@@ -149,7 +171,7 @@ namespace QuickDraw
         {
             Debug.Assert(imageLoadTask == null);
 
-            imageLoadTask = FillImageCacheAsync(this.SlideCanvas, imageCachePosition).ContinueWith(async _ => {
+            imageLoadTask = FillImageCacheAsync(this.SlideCanvas, imageCachePosition).ContinueWith(_ => {
                 SlideCanvas.Invalidate(); 
             });
         }
@@ -193,7 +215,7 @@ namespace QuickDraw
                 foreach (var image in beforeImages)
                 {
                     var bitmap = await CanvasVirtualBitmap.LoadAsync(resourceCreator, image);
-                    lock(cachedImages)
+                    lock(cachedImagesLock)
                     {
                         cachedImages.AddFirst(bitmap);
                     }
@@ -205,7 +227,7 @@ namespace QuickDraw
                 foreach (var image in afterImages)
                 {
                     var bitmap = await CanvasVirtualBitmap.LoadAsync(resourceCreator, image);
-                    lock (cachedImages)
+                    lock (cachedImagesLock)
                     {
                         cachedImages.AddLast(bitmap);
                     }
@@ -298,8 +320,6 @@ namespace QuickDraw
                 await UpdateImageAsync(this.SlideCanvas, direction);
             }
 
-            var increment = direction == LoadDirection.Forwards ? 1 : -1;
-
             if (imagePaths.Count <= CACHE_SIZE)
             {
                 currentImageNode = direction == LoadDirection.Forwards ?
@@ -324,6 +344,12 @@ namespace QuickDraw
         private async void AppTitleBar_PreviousButtonClick(object sender, RoutedEventArgs e)
         {
             await Move(LoadDirection.Backwards);
+        }
+
+        private void AppTitleBar_GrayscaleButtonClick(object sender, RoutedEventArgs e)
+        {
+            grayscale = !grayscale;
+            SlideCanvas?.Invalidate();
         }
     }
 }

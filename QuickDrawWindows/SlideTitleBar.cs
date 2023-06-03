@@ -32,6 +32,8 @@ namespace QuickDraw
 
         public event RoutedEventHandler NextButtonClick;
         public event RoutedEventHandler PreviousButtonClick;
+        public event RoutedEventHandler GrayscaleButtonClick;
+
 
         public SlideTitleBar()
         {
@@ -48,6 +50,11 @@ namespace QuickDraw
             PreviousButtonClick?.Invoke(sender, e);
         }
 
+        void GrayscaleButton_Click(object sender, RoutedEventArgs e)
+        {
+            GrayscaleButtonClick?.Invoke(sender, e);
+        }
+
         protected override void OnApplyTemplate()
         {
             m_window = ((App)Application.Current).Window;
@@ -60,6 +67,7 @@ namespace QuickDraw
 
             (GetTemplateChild("NextButton") as Button).Click += NextButton_Click;
             (GetTemplateChild("PreviousButton") as Button).Click += PreviousButton_Click;
+            (GetTemplateChild("GrayscaleButton") as Button).Click += GrayscaleButton_Click;
 
             (GetTemplateChild("BackButton") as Button).Click += SlideTitleBar_BackClick;
 
