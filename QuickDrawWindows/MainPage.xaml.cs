@@ -270,11 +270,6 @@ namespace QuickDraw
             UpdateColumnWidths(grid);
         }
 
-        private void AppBarButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             Grid grid = (Grid)sender;

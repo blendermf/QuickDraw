@@ -44,7 +44,7 @@
             </Grid.RowDefinitions>
 
                 <CommandBar  x:Name="commandBar"  DefaultLabelPosition="Right" VerticalContentAlignment="Center" Grid.Row="0">
-                    <AppBarButton Icon="Refresh" Label="Refresh" Click="AppBarButton_Click">
+                    <AppBarButton Icon="Refresh" Label="Refresh">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Modifiers="Control" Key="R"/>
                             <KeyboardAccelerator Key="F5"/>

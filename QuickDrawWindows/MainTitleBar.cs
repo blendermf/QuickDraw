@@ -77,8 +77,6 @@ namespace QuickDraw
 
             var titleWidth = (GetTemplateChild("TitleColumn") as ColumnDefinition).ActualWidth;
 
-            List<Windows.Graphics.RectInt32> dragRectsList = new();
-
             Windows.Graphics.RectInt32 dragRect = new(
                 (int)(m_leftInset * scale),
                 0,

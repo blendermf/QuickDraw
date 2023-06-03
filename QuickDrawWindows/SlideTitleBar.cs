@@ -34,6 +34,37 @@ namespace QuickDraw
         public event RoutedEventHandler NextButtonClick;
         public event RoutedEventHandler PreviousButtonClick;
         public event RoutedEventHandler GrayscaleButtonClick;
+        public event RoutedEventHandler PauseButtonClick;
+
+        private double progress = 0;
+        public double Progress
+        {
+            get => progress;
+            set {
+                if (this.IsLoaded)
+                {
+                    (GetTemplateChild("ProgressBar") as ProgressBar).Value = value * 100;
+                }
+                progress = value; 
+            }
+        }
+
+        private bool m_paused = false;
+        public bool IsPaused
+        {
+            get => m_paused;
+            set
+            {
+                m_paused = value;
+                if (IsLoaded)
+                {
+                    var button = (GetTemplateChild("PauseButton") as Button);
+                    var icon = button.FindDescendant<SymbolIcon>();
+
+                    icon.Symbol = m_paused ? Symbol.Play : Symbol.Pause;
+                }
+            }
+        }
 
 
         public SlideTitleBar()
@@ -56,6 +87,11 @@ namespace QuickDraw
             GrayscaleButtonClick?.Invoke(sender, e);
         }
 
+        void PauseButton_Click(object sender, RoutedEventArgs e)
+        {
+            PauseButtonClick?.Invoke(sender, e);
+        }
+
         protected override void OnApplyTemplate()
         {
             m_window = ((App)Application.Current).Window;
@@ -69,6 +105,7 @@ namespace QuickDraw
             (GetTemplateChild("NextButton") as Button).Click += NextButton_Click;
             (GetTemplateChild("PreviousButton") as Button).Click += PreviousButton_Click;
             (GetTemplateChild("GrayscaleButton") as Button).Click += GrayscaleButton_Click;
+            (GetTemplateChild("PauseButton") as Button).Click += PauseButton_Click;
 
             (GetTemplateChild("BackButton") as Button).Click += SlideTitleBar_BackClick;
 

@@ -7,6 +7,15 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:SlideTitleBar">
                     <Grid Width="Auto" Height="48" x:Name="LayoutRoot" >
+                        <Grid.Resources>
+
+                            <ResourceDictionary>
+                                <x:Double x:Key="ProgressBarTrackHeight">0</x:Double>
+                                <CornerRadius x:Key="ProgressBarCornerRadius">0</CornerRadius>
+                            </ResourceDictionary>
+
+                        </Grid.Resources>
+
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
@@ -14,7 +23,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
-
+                        <ProgressBar x:Name="ProgressBar" Grid.Column="0" Value="0" VerticalAlignment="Bottom"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition x:Name="CenterLeftColumn" Width="*" MinWidth="62"/>
@@ -43,7 +52,7 @@
                                         <SymbolIcon   Symbol="Next"/>
                                     </Viewbox>
                                 </Button>
-                                <Button Padding="12,12,12,12"  Margin="10,0,0,0">
+                                <Button x:Name="PauseButton" Padding="12,12,12,12"  Margin="10,0,0,0">
                                     <Viewbox Width="16" Height="16">
                                         <SymbolIcon   Symbol="Pause"/>
                                     </Viewbox>

@@ -4,6 +4,7 @@ using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -25,6 +26,7 @@ using System.Threading.Tasks;
 using Windows.Devices.AllJoyn;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -95,11 +97,31 @@ namespace QuickDraw
 
         private readonly object cachedImagesLock = new();
 
+        private readonly DispatcherQueueTimer m_SlideTimer;
+
+        private int m_TicksElapsed = 0;
+
         public SlidePage()
         {
             this.InitializeComponent();
 
             this.Unloaded += SlidePage_Unloaded;
+
+            m_SlideTimer = DispatcherQueue.CreateTimer();
+            m_SlideTimer.IsRepeating = true;
+            m_SlideTimer.Interval = new(TimeSpan.TicksPerMillisecond * (long)1000);
+            m_SlideTimer.Tick += async (sender, e) =>
+            {
+                AppTitleBar.Progress = (double)m_TicksElapsed / 30.0;
+                m_TicksElapsed += 1;
+                if (m_TicksElapsed > 30)
+                {
+                    m_TicksElapsed = 0;
+
+                    await Move(LoadDirection.Forwards);
+                }
+            };
+            m_SlideTimer.Start();
         }
 
         void SlidePage_Unloaded(object sender, RoutedEventArgs e)
@@ -350,6 +372,22 @@ namespace QuickDraw
         {
             grayscale = !grayscale;
             SlideCanvas?.Invalidate();
+        }
+
+        private void AppTitleBar_PauseButtonClick(object sender, RoutedEventArgs e)
+        {
+            
+            if (m_SlideTimer.IsRunning)
+            {
+                m_SlideTimer.Stop();
+                AppTitleBar.IsPaused = true;
+            }
+            else
+            {
+                m_SlideTimer.Start();
+                AppTitleBar.IsPaused = false;
+
+            }
         }
     }
 }
