@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -71,6 +72,14 @@ namespace QuickDraw
 
             (GetTemplateChild("BackButton") as Button).Click += SlideTitleBar_BackClick;
 
+            _ = AdjustLayout();
+        }
+
+        async Task AdjustLayout()
+        {
+            var delay = TimeSpan.Parse((string)Application.Current.Resources["ControlFastAnimationDuration"]);
+
+            await Task.Delay(delay);
             m_titleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
             ApplyInset();
             SetDragRegion();
