@@ -24,6 +24,7 @@ using System.Text.Json.Serialization;
 using Windows.Storage;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Eventing.Reader;
+using System.Collections.Specialized;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -221,7 +222,10 @@ namespace QuickDraw
             this.Resources.Add("doubleToEnumConverter", new DoubleToEnumConverter(typeof(TimerEnum)));
             this.Resources.Add("stringToEnumConverter", new StringToEnumConverter(typeof(TimerEnum)));
 
-            DispatcherQueue.TryEnqueue(async () => await ReadFolders());
+            this.Loaded += async (_, _) =>
+            {
+                await ReadFolders();
+            };
 
 
         }
@@ -285,7 +289,7 @@ namespace QuickDraw
 
             var file = await qdDataFolder.GetFileAsync("folders.json");
 
-            using var stream = await file.OpenStreamForReadAsync().ConfigureAwait(false);
+            using var stream = await file.OpenStreamForReadAsync();
             try
             {
                 ImageFolders = await JsonSerializer.DeserializeAsync<ObservableCollection<ImageFolder>>(stream);
@@ -297,6 +301,7 @@ namespace QuickDraw
                 ImageFolders = new();
             }
 
+            this.ImageFolderListView.ItemsSource = ImageFolders;
             ImageFolders.CollectionChanged += (sender, e) =>
             {
                 WriteFolders();
