@@ -14,16 +14,22 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Windows.Storage;
+using System.Collections.ObjectModel;
+using System.Diagnostics.Eventing.Reader;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace QuickDraw
 {
-
     /// <summary>
     /// Converts the value of the internal slider into text.
     /// </summary>
@@ -73,11 +79,11 @@ namespace QuickDraw
 
     }
 
-        /// <summary>
-        /// Converts the value of the internal slider into text.
-        /// </summary>
-        /// <remarks>Internal use only.</remarks>
-        internal class DoubleToEnumConverter : IValueConverter
+    /// <summary>
+    /// Converts the value of the internal slider into text.
+    /// </summary>
+    /// <remarks>Internal use only.</remarks>
+    internal class DoubleToEnumConverter : IValueConverter
     {
         private readonly Type _enum;
 
@@ -183,11 +189,7 @@ namespace QuickDraw
             NoLimit
         };
 
-        public List<ImageFolder> ImageFolders { get; set; } = new List<ImageFolder>() {
-            new ImageFolder("D:\\Reference\\Image Reference\\Poses\\Nude Female", 35743),
-            new ImageFolder("D:\\Reference\\Image Reference\\Poses\\Nude Male", 13758),
-            new ImageFolder("D:\\Reference\\Image Reference\\Heads\\Expressions Women", 3632)
-        };
+        public ObservableCollection<ImageFolder> ImageFolders { get; set; }
 
         public class ByWidth : IComparer<TextBlock>
         {
@@ -218,6 +220,87 @@ namespace QuickDraw
             this.DataContext = this;
             this.Resources.Add("doubleToEnumConverter", new DoubleToEnumConverter(typeof(TimerEnum)));
             this.Resources.Add("stringToEnumConverter", new StringToEnumConverter(typeof(TimerEnum)));
+
+            DispatcherQueue.TryEnqueue(async () => await ReadFolders());
+
+
+        }
+        Task writeTask;
+        Queue<Func<Task>> writeTasksQueue = new();
+
+        private async Task _writeFolders()
+        {
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var appDataFolder = await StorageFolder.GetFolderFromPathAsync(appDataPath);
+
+            var qdDataFolder = await appDataFolder.CreateFolderAsync("MFDigitalMedia.QuickDraw", CreationCollisionOption.OpenIfExists);
+
+            var file = await qdDataFolder.CreateFileAsync("folders.json", Windows.Storage.CreationCollisionOption.OpenIfExists);
+
+            using var stream = await file.OpenStreamForWriteAsync();
+            await JsonSerializer.SerializeAsync(stream, ImageFolders);
+            stream.Dispose();
+        }
+
+        // Writes folder, makes sure we don't overlap with other writes
+        void WriteFolders()
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (writeTask == null)
+                {
+                    void WriteContinue()
+                    {
+                        if (writeTasksQueue.Count > 0)
+                        {
+                            writeTask = writeTasksQueue.Dequeue()().ContinueWith(Task =>
+                            {
+                                WriteContinue();
+                            });
+                        }
+                        else
+                        {
+                            writeTask = null;
+                        }
+                    }
+
+                    writeTask = _writeFolders().ContinueWith(Task =>
+                    {
+                        WriteContinue();
+                    });
+                }
+                else
+                {
+                    writeTasksQueue.Enqueue(_writeFolders);
+                }
+            });
+        }
+
+        async Task ReadFolders()
+        {
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var appDataFolder = await StorageFolder.GetFolderFromPathAsync(appDataPath);
+
+            var qdDataFolder = await appDataFolder.CreateFolderAsync("MFDigitalMedia.QuickDraw", CreationCollisionOption.OpenIfExists);
+
+            var file = await qdDataFolder.GetFileAsync("folders.json");
+
+            using var stream = await file.OpenStreamForReadAsync().ConfigureAwait(false);
+            try
+            {
+                ImageFolders = await JsonSerializer.DeserializeAsync<ObservableCollection<ImageFolder>>(stream);
+                stream.Dispose();
+            }
+            catch
+            {
+                // No data or other errors
+                ImageFolders = new();
+            }
+
+            ImageFolders.CollectionChanged += (sender, e) =>
+            {
+                WriteFolders();
+            };
         }
 
         private void UpdateColumnWidths(Grid grid)
@@ -230,7 +313,7 @@ namespace QuickDraw
             var availableWidth = gridWidth - (grid.ColumnDefinitions[3].ActualWidth + ImageCountColumnWidth + 20);
 
             var maxPathColumnWidth = _pathTexts.Max != null ? _pathTexts.Max.PreWrappedWidth() : 0;
-            PathColumnWidth = Math.Max(100, Math.Min(availableWidth,maxPathColumnWidth));
+            PathColumnWidth = Math.Max(100, Math.Min(availableWidth, maxPathColumnWidth));
 
             foreach (ColumnDefinition pathColumn in _pathColumns)
             {
@@ -280,6 +363,89 @@ namespace QuickDraw
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             (Application.Current as App)?.Window.NavigateToSlideshow();
+        }
+
+        private static IEnumerable<string> GetFolderImages(string filepath)
+        {
+            IEnumerable<string> files = Directory.EnumerateFiles(filepath, "*.*", SearchOption.AllDirectories)
+                                    .Where(s => s.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                                            || s.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                                            || s.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+
+            return files;
+        }
+
+        private void OpenFolders()
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                IFileOpenDialog dialog = null;
+                uint count = 0;
+                try
+                {
+                    dialog = new NativeFileOpenDialog();
+                    dialog.SetOptions(
+                        FileOpenDialogOptions.NoChangeDir
+                        | FileOpenDialogOptions.PickFolders
+                        | FileOpenDialogOptions.AllowMultiSelect
+                        | FileOpenDialogOptions.PathMustExist
+                    );
+                    _ = dialog.Show(IntPtr.Zero);
+
+                    dialog.GetResults(out IShellItemArray shellItemArray);
+
+                    if (shellItemArray != null)
+                    {
+                        string filepath = null;
+                        shellItemArray.GetCount(out count);
+
+                        for (uint i = 0; i < count; i++)
+                        {
+                            shellItemArray.GetItemAt(i, out IShellItem shellItem);
+
+                            if (shellItem != null)
+                            {
+                                shellItem.GetDisplayName(SIGDN.FILESYSPATH, out IntPtr i_result);
+                                filepath = Marshal.PtrToStringAuto(i_result);
+                                Marshal.FreeCoTaskMem(i_result);
+
+                                IEnumerable<string> files = GetFolderImages(filepath);
+
+                                var folder = new ImageFolder(filepath, files.Count());
+
+                                var oldFolder = ImageFolders.FirstOrDefault<ImageFolder>((f) => f.Path == folder.Path);
+                                var folderIndex = ImageFolders.IndexOf(oldFolder);
+
+                                if (folderIndex != -1)
+                                {
+                                    ImageFolders[folderIndex] = folder;
+                                }
+                                else
+                                {
+                                    ImageFolders.Add(folder);
+                                }
+
+                            }
+                        }
+                    }
+                }
+                catch (COMException)
+                {
+                    // No files or other weird error, do nothing.
+                }
+                finally
+                {
+                    if (dialog != null)
+                    {
+                        _ = Marshal.FinalReleaseComObject(dialog);
+                    }
+                }
+            });
+        }
+
+        private void AddFoldersButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolders();
         }
     }
 }

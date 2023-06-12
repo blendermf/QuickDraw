@@ -50,41 +50,29 @@ namespace QuickDraw
 
         private readonly List<string> imagePaths = new()
         {
-            @"C:\Users\blendermf\Pictures\Reference\4b8e79076da0a545f5d8474d48d6aba9.jpg",
-            @"C:\Users\blendermf\Pictures\Reference\b266995705bf837bd882ef7ec8a0c658.jpg",
-            @"C:\Users\blendermf\Pictures\Reference\ce509886c60122d6841b5a3c40e40c13.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\00ab97eb3768fe67600e16e4e2f4be28.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\00d8a150d3327954bb6d217c94d93e10.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\0cc5e36c58c975b8f580af6ba9104fc1.jpg",
 
-            @"C:\Users\blendermf\Pictures\Reference\Baton_Rouge_Louisiana (18 of 108).jpg",
-            @"C:\Users\blendermf\Pictures\Reference\5ffd4bf8b2e9765d4357e39da574e65a.jpg", 
-            @"C:\Users\blendermf\Pictures\Reference\ea193f9771bbe55c1562ca8587371c2f.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\0d44ac6bbc2f76ad0dbd5a6a4e49656f.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\01c3307c28a95405b448f8ba6b55c8c8.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\01d050c898dbdbfc16f8c58984f6cfb0.jpg",
 
-            @"C:\Users\blendermf\Pictures\Reference\4e671baaf8d17256d82978d04bb68275.jpg",
-            @"C:\Users\blendermf\Pictures\Reference\5f1f0087ebb95483a19f3acf438248c3.jpg",
-            @"C:\Users\blendermf\Pictures\Reference\9c9c5055fcfa58b4a4c8c0969a908984.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\01d6068f148122e65c20d71700a172cd.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\0fe196d54935159419d425c96e084839.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\0d43509436a0dea9e92274def74be668.jpg",
 
-            @"D:\Reference\Image Reference\Poses\Women\00ab97eb3768fe67600e16e4e2f4be28.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\00d8a150d3327954bb6d217c94d93e10.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\0cc5e36c58c975b8f580af6ba9104fc1.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\1b7cebc4eec7b5a8bd7a8eb8cbfc0561.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\1c91b180a9bba47b9af3e9e65f08b6e0.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\1bc1899d6610ed5322316abcf1ca14ea.jpg",
 
-            @"D:\Reference\Image Reference\Poses\Women\0d44ac6bbc2f76ad0dbd5a6a4e49656f.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\01c3307c28a95405b448f8ba6b55c8c8.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\01d050c898dbdbfc16f8c58984f6cfb0.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\0e6817b0c076405a00fb987f4f405eea.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\0e92728c5c2758332a5b141d174b5696.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\0ef896c25863a1a4b1fdf60b901c1fd6.jpg",
 
-            @"D:\Reference\Image Reference\Poses\Women\01d6068f148122e65c20d71700a172cd.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\0fe196d54935159419d425c96e084839.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\0d43509436a0dea9e92274def74be668.jpg",
-
-            @"D:\Reference\Image Reference\Poses\Women\1b7cebc4eec7b5a8bd7a8eb8cbfc0561.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\1c91b180a9bba47b9af3e9e65f08b6e0.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\1bc1899d6610ed5322316abcf1ca14ea.jpg",
-
-            @"D:\Reference\Image Reference\Poses\Women\0e6817b0c076405a00fb987f4f405eea.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\0e92728c5c2758332a5b141d174b5696.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\0ef896c25863a1a4b1fdf60b901c1fd6.jpg",
-
-            @"D:\Reference\Image Reference\Poses\Women\2c5d9ca90e2bc17a33a15508e5e4cce6.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\2d897822c8ba784742b96fdf39880494.jpg",
-            @"D:\Reference\Image Reference\Poses\Women\2df95b09f17abe50abffc7a1d43e2324.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\2c5d9ca90e2bc17a33a15508e5e4cce6.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\2d897822c8ba784742b96fdf39880494.jpg",
+            @"T:\Reference\Image Reference\Poses\Women\2df95b09f17abe50abffc7a1d43e2324.jpg",
         };
 
         private readonly LinkedList<CanvasVirtualBitmap> cachedImages = new();
@@ -112,9 +100,9 @@ namespace QuickDraw
             m_SlideTimer.Interval = new(TimeSpan.TicksPerMillisecond * (long)1000);
             m_SlideTimer.Tick += async (sender, e) =>
             {
-                AppTitleBar.Progress = (double)m_TicksElapsed / 30.0;
+                AppTitleBar.Progress = (double)m_TicksElapsed / 300.0;
                 m_TicksElapsed += 1;
-                if (m_TicksElapsed > 30)
+                if (m_TicksElapsed > 300)
                 {
                     m_TicksElapsed = 0;
 
