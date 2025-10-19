@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<base:PageBase
+    x:Class="QuickDraw.Views.SlidePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="using:QuickDraw.Views.Base"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:QuickDraw.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Unloaded="SlidePage_Unloaded"
+    mc:Ignorable="d">
+
+    <base:PageBase.Background>
+        <SolidColorBrush Color="#00000000" />
+    </base:PageBase.Background>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <local:SlideTitlebarControl
+            x:Name="AppTitleBar"
+            Grid.Row="0"
+            BackButtonCommand="{x:Bind ViewModel.GoBackCommand}"
+            DragRegionsChanged="{x:Bind ViewModel.HandleDragRegionsChanged}"
+            GrayscaleButtonCommand="{x:Bind ViewModel.ToggleGrayscaleCommand}"
+            Inactive="{x:Bind ViewModel.TitlebarInactive, Mode=OneWay}"
+            LeftInset="{x:Bind ViewModel.TitlebarLeftInset}"
+            NextButtonCommand="{x:Bind ViewModel.NextImageCommand}"
+            PauseButtonCommand="{x:Bind ViewModel.PausePlayCommand}"
+            PauseVisibility="{x:Bind ViewModel.PauseVisibility, Mode=OneWay}"
+            Paused="{x:Bind ViewModel.Paused, Mode=OneWay}"
+            PreviousButtonCommand="{x:Bind ViewModel.PreviousImageCommand}"
+            Progress="{x:Bind ViewModel.Progress, Mode=OneWay}"
+            RightInset="{x:Bind ViewModel.TitlebarRightInset}"
+            TitlebarService="{x:Bind ViewModel.TitlebarService}" />
+        <local:MFPointerGrid x:Name="SlideCanvasContainer" Grid.Row="1">
+            <canvas:CanvasControl
+                x:Name="SlideCanvas"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                ClearColor="Transparent"
+                CreateResources="SlideCanvas_CreateResources"
+                Draw="CanvasControl_Draw" />
+        </local:MFPointerGrid>
+    </Grid>
+</base:PageBase>

@@ -234,3 +234,13 @@ project.lock.json
 WebSrc/language-server-log.txt
 
 ._*
+
+
+## Dev Licence Files
+
+**/devlics
+**/devlics/*
+*.devlic
+*.license
+language-server-log.txt
+QuickDrawWindows/Properties/launchSettings.json

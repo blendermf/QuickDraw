@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="QuickDraw.Views.ImageFolderListViewControl2"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuickDraw"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dataGrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:grid="using:Syncfusion.UI.Xaml.Grids"
+    mc:Ignorable="d"
+    x:Name="Control">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="EmptyHeaderTemplate">
+        </DataTemplate>
+
+        <DataTemplate x:Key="CheckboxHeaderTemplate">
+            <StackPanel Orientation="Horizontal">
+                <CheckBox IsTabStop="False" Content="Select Folder(s)"></CheckBox>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <CommandBar x:Name="commandBar"  
+                    DefaultLabelPosition="Right" 
+                    VerticalContentAlignment="Center" 
+                    Grid.Row="0">
+            <AppBarButton x:Name="RefreshAll" d:Click="RefreshAll_Click"  Icon="Refresh" Label="Refresh">
+                <AppBarButton.KeyboardAccelerators>
+                    <KeyboardAccelerator Modifiers="Control" Key="R"/>
+                    <KeyboardAccelerator Key="F5"/>
+                </AppBarButton.KeyboardAccelerators>
+            </AppBarButton>
+            <AppBarButton x:Name="AddFoldersButton" Icon="Add" Label="Add Folder(s)" d:Click="AddFoldersButton_Click">
+                <AppBarButton.KeyboardAccelerators>
+                    <KeyboardAccelerator Modifiers="Control" Key="O"/>
+                </AppBarButton.KeyboardAccelerators>
+            </AppBarButton>
+            <CommandBar.Content>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox x:Name="SelectAllCheckbox" 
+                              IsThreeState="True"
+                              Margin="10,0,0,0" 
+                              MinWidth="0" 
+                              VerticalAlignment="Center" 
+                              d:Click="SelectAllCheckbox_Click"/>
+                    <TextBlock Text="Select Folder(s)" VerticalAlignment="Center"/>
+                </StackPanel>
+            </CommandBar.Content>
+        </CommandBar>
+        
+        <dataGrid:SfDataGrid x:Name="sfDataGrid"
+                         ItemsSource="{x:Bind ItemsSource}"
+                         Grid.Row="1"    
+                         AutoGenerateColumns="False"
+                         SelectionMode="Extended"
+                         ColumnWidthMode="AutoLastColumnFill"
+                         NavigationMode="Row"
+                         AllowRowDragDrop="True" 
+                         AllowSorting="False"
+                         AllowDrop="True"
+                         HeaderRowHeight="0">
+
+            <dataGrid:SfDataGrid.Columns>
+                <dataGrid:GridCheckBoxColumn HeaderText="" 
+                                             MappingName="Selected"
+                                             AllowEditing="True"/>
+                <dataGrid:GridTextColumn HeaderText="" 
+                                         MappingName="Path" />
+                <dataGrid:GridNumericColumn HeaderText="" 
+                                            MappingName="ImageCount" />
+                <dataGrid:GridTemplateColumn HeaderText=""
+                                             MappingName="Actions">
+                    <dataGrid:GridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button x:Name="RefreshButton" Padding="5,5,5,6" Margin="10,0,0,0">
+                                    <Viewbox Width="16" Height="16">
+                                        <SymbolIcon Symbol="Refresh"/>
+                                    </Viewbox>
+                                </Button>
+                                <Button Padding="5,5,5,6" Margin="10,0,0,0">
+                                    <Viewbox Width="16" Height="16">
+                                        <FontIcon Glyph="&#xE838;" />
+                                    </Viewbox>
+                                </Button>
+                                <Button x:Name="DeleteButton" Padding="5,5,5,6" Margin="10,0,0,0">
+                                    <Viewbox Width="16" Height="16">
+                                        <SymbolIcon Symbol="Delete"/>
+                                    </Viewbox>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </dataGrid:GridTemplateColumn.CellTemplate>
+                </dataGrid:GridTemplateColumn>
+            </dataGrid:SfDataGrid.Columns>
+        </dataGrid:SfDataGrid>
+    </Grid>
+</UserControl>

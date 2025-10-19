@@ -1,118 +1,98 @@
-﻿using System;
-using System.Diagnostics;
-using System.Windows;
-using Microsoft.Web.WebView2.Core;
-using System.Net;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Xaml;
+using QuickDraw.Activation;
+using QuickDraw.Contracts.Services;
+using QuickDraw.Services;
+using QuickDraw.ViewModels;
+using QuickDraw.Views;
+using System;
 using System.IO;
-using System.ComponentModel;
-using System.Net.Http;
+using System.Reflection;
 
-namespace QuickDraw
+namespace QuickDraw;
+
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    public IHost Host
     {
-        private readonly HttpClient httpClient = new();
-        private InstallingWindow installingWindow;
-
-        private string installerFile;
-
-        private static bool HasWebView2()
-        {
-            try
-            {
-                string versionString = CoreWebView2Environment.GetAvailableBrowserVersionString();
-                Version requiredVersion = Version.Parse("89.0.774.75");
-                Version version = Version.Parse(versionString.Split(" ")[0]);
-
-                return version.CompareTo(requiredVersion) >= 0;
-            }
-            catch (WebView2RuntimeNotFoundException)
-            {
-                return false;
-            }
-        }
-
-        private async void DownloadWebView2()
-        {
-            using (var response = await httpClient.GetAsync("https://go.microsoft.com/fwlink/p/?LinkId=2124703", HttpCompletionOption.ResponseHeadersRead))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    using (var stream = await response.Content.ReadAsStreamAsync()) 
-                    using (var fileStream = new FileStream(installerFile, FileMode.Create))
-                    {
-                        await stream.CopyToAsync(fileStream);
-                    }
-                    DownloadRuntimeCompleted();
-                } else
-                {
-                    InstallError();
-                }
-
-            }
-        }
-
-        private void InstallError()
-        {
-            installingWindow.Hide();
-
-            MessageBoxResult dialogResult = MessageBox.Show("Microsoft Edge WebView2 did not install properly. Click OK to try again or Cancel to quit.",
-                                    "QuickDraw", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
-
-            if (dialogResult == MessageBoxResult.OK)
-            {
-                installingWindow.Show();
-                if (File.Exists(installerFile))
-                {
-                    File.Delete(installerFile);
-                }
-                DownloadWebView2();
-            }
-            else
-            {
-                Shutdown();
-            }
-        }
-
-        protected override /*async*/ void OnStartup(StartupEventArgs e)
-        {
-            string tempFolder = Path.GetTempPath();
-            installerFile = Path.Combine(tempFolder, "MicrosoftEdgeWebview2Setup.exe");
-
-            // Check for WebView2 Runtime, install if needed
-            if (HasWebView2())
-            {
-                MainWindow = new QuickDrawWindow();
-                MainWindow.Show();
-            }
-            else
-            {
-                installingWindow = new InstallingWindow();
-                installingWindow.Show();
-                DownloadWebView2();
-            }
-        }
-
-        private async void DownloadRuntimeCompleted()
-        {
-            Process process = new();
-            process.StartInfo.FileName = installerFile;
-            process.StartInfo.Arguments = @"/silent /install";
-            process.StartInfo.Verb = "runas";
-            process.StartInfo.UseShellExecute = true;
-            _ = process.Start();
-            await process.WaitForExitAsync();
-
-            if (HasWebView2())
-            {
-                installingWindow.Hide();
-                MainWindow = new QuickDrawWindow();
-                MainWindow.Show();
-                return;
-            }
-        }
+        get;
     }
+
+    public static T GetService<T>()
+        where T : class
+    {
+        if ((App.Current as App)!.Host.Services.GetService(typeof(T)) is not T service)
+        {
+            throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
+        }
+
+        return service;
+    }
+
+    public App()
+    {
+        try
+        {
+            string resourceName = "syncfusion.license";
+
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            if (assembly != null)
+            {
+                using Stream? rsrcStream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".Assets." + resourceName);
+
+                if (rsrcStream != null)
+                {
+                    using StreamReader streamReader = new(rsrcStream);
+
+                    string key = streamReader.ReadToEnd();
+
+                    if (key != "")
+                    {
+                        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(key);
+                    }    
+                }
+            }
+        }
+        catch { };
+
+        this.InitializeComponent();
+
+        Host = Microsoft.Extensions.Hosting.Host.
+            CreateDefaultBuilder().
+            UseContentRoot(AppContext.BaseDirectory).
+            ConfigureServices(services =>
+            {
+                // Default Activation Handler
+                services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
+
+                // Other Activation Handlers
+
+                // Services
+                services.AddSingleton<ISettingsService, SettingsService>();
+                services.AddSingleton<IActivationService, ActivationService>();
+                services.AddSingleton<IPageService, PageService>();
+                services.AddSingleton<INavigationService, NavigationService>();
+                services.AddSingleton<ITitlebarService, TitlebarService>();
+                services.AddSingleton<ISlideImageService, SlideImageService>();
+
+                // Views and ViewModels
+                services.AddTransient<MainViewModel>();
+                services.AddTransient<MainPage>();
+
+                services.AddTransient<SlideViewModel>();
+                services.AddTransient<SlidePage>();
+            }).
+            Build();
+    }
+
+    protected async override void OnLaunched(LaunchActivatedEventArgs args)
+    {
+        base.OnLaunched(args);
+
+        await App.GetService<IActivationService>().ActivateAsync(args);
+    }
+
+    public static MainWindow Window { get; } = new();
 }

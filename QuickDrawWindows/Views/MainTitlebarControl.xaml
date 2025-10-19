@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<base:TitlebarBaseControl
+    x:Class="QuickDraw.Views.MainTitlebarControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="using:QuickDraw.Views.Base"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:QuickDraw.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid
+        x:Name="LayoutRoot"
+        Width="Auto"
+        Height="32">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="LeftInsetColumn" Width="{x:Bind LeftInset}" />
+            <ColumnDefinition x:Name="TitleColumn" Width="*" />
+            <ColumnDefinition x:Name="RightInsetColumn" Width="{x:Bind RightInset}" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+            <Image
+                Width="16"
+                Height="16"
+                Margin="13,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Source="ms-appx:///Assets/TitleBar.png"
+                UseLayoutRounding="True" />
+            <TextBlock
+                x:Name="AppTitleTextBlock"
+                Margin="14,0,14,0"
+                VerticalAlignment="Center"
+                Text="QuickDraw"
+                TextWrapping="NoWrap" />
+        </StackPanel>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+
+                <VisualStateGroup.Transitions>
+                    <VisualTransition To="InactiveState">
+                        <VisualTransition.GeneratedEasingFunction>
+                            <CubicEase EasingMode="EaseIn" />
+                        </VisualTransition.GeneratedEasingFunction>
+                    </VisualTransition>
+                    <VisualTransition From="InactiveState">
+                        <VisualTransition.GeneratedEasingFunction>
+                            <CubicEase EasingMode="EaseIn" />
+                        </VisualTransition.GeneratedEasingFunction>
+                    </VisualTransition>
+                </VisualStateGroup.Transitions>
+
+                <VisualState x:Name="InactiveState">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{x:Bind Inactive, Mode=OneWay}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="AppTitleTextBlock.Foreground" Value="{StaticResource WindowCaptionForegroundDisabled}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</base:TitlebarBaseControl>

@@ -1,17 +1,16 @@
-﻿<Window x:Class="QuickDraw.QuickDrawWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-        xmlns:local="clr-namespace:QuickDraw"
-        mc:Ignorable="d"
-        Title="QuickDraw" Height="450" Width="800" Background="#FF1E1E1E"
-        MinWidth="550" MinHeight="320">
-    <Window.CommandBindings>
-        <CommandBinding Command="{x:Static local:QuickDrawWindow.StopPropagation}"
-                    Executed="ExecutedStopPropagation"
-                    CanExecute="CanExecuteStopPropagation" />
-    </Window.CommandBindings>
-    <wv2:WebView2 Name="webView"/>
+<?xml version="1.0" encoding="utf-8" ?>
+<Window
+    x:Class="QuickDraw.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:QuickDraw"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Frame x:Name="MainFrame" />
 </Window>
